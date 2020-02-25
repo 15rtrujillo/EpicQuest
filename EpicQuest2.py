@@ -39,7 +39,7 @@ class Player:
             self.house = toBool(stats[7])
             saveFile.close()
             return True
-        except:
+        except Exception as ex:
             return False
 
     def save(self):
@@ -52,14 +52,14 @@ class Player:
             "maxhp="+str(self.maxhp),
             "lvl="+str(self.lvl),
             "xp="+str(self.xp),
-            "loc="+self.loc,
+            "loc="+str(self.loc),
             "house="+str(self.house)]
         try:
             for stat in stats:
                 print(stat, file=saveFile)
-                saveFile.close()
-                return True
-        except:
+            saveFile.close()
+            return True
+        except Exception as ex:
             return False
 
     def setStats(self, name, gold, hp, maxhp, lvl):
@@ -125,6 +125,7 @@ def startMenu():
         elif c == "2":
             if loadGame():
                 return True
+            
         elif c == "3":
             about()
             
@@ -141,6 +142,42 @@ def startMenu():
             sleep(2)
             exit()
 
+def newGame():
+    while True:
+        clearScreen()
+        print("New Game\n")
+        name = input("Please enter the name of your character ('C' to cancel): ")
+        if name.lower() == "c":
+            return False
+        if yesOrNo("Are you sure you want to create a new character named " + name + "?"):
+            # story()
+            player.name = name
+            player.save()
+            return True
+
+def story():
+    pass
+
+def loadGame():
+    while True:
+        clearScreen()
+        print("Load Game\n")
+        fileName = input("Please enter the name of the character " +
+                     "you'd like to load ('C' to cancel): ")
+        
+        if player.load(fileName):
+            print("\nCharacter " + fileName + " loaded successfully!")
+            pause()
+            return True
+        else:
+            if fileName.lower() == "c":
+                return False
+            else:
+                print("\nThere was no character found by the name " + fileName +
+                      ".\nPlease try again")
+                pause()
+    
+            
 def about():
     clearScreen()
     print("Epic Quest: Text Quest")
@@ -156,6 +193,9 @@ def changeLog():
     print("Epic Quest: Text Quest")
     print(version + "\n")
     print("Change Log:")
+    print("* Fixed a bug that broke saving that popped up while migrating to the new\n" +
+          "engine.")
+    print("* Added save and load menus.")
     print("* Added this screen.")
     print("* Reworked the way the player's data is stored,\n"
           "allowing for a possible future duel arena where you\n"
@@ -168,7 +208,11 @@ def changeLog():
     print("* Fixed a bug where the game would begin to slow\n"
           "down the longer you played.")
     pause()
-            
+
+
+def mainMenu():
+    pass
+
 ### HELPER FUNCTIONS ###
 def pause():
     input("\nPress [ENTER] to continue...")
@@ -206,3 +250,6 @@ def yesOrNo(question):
 
 def toBool(value):
     return value.lower() in ["true"]
+
+
+main()
