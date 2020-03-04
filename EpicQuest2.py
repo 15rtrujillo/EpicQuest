@@ -14,9 +14,9 @@ class Player:
         self.gold = 100
         self.hp = 100
         self.maxhp = 100
-        self.lvl = 1
+        self.level = 1
         self.xp = 0
-        self.loc = "Falconwood"
+        self.location = 0
         self.house = False
 
     def load(self, name):
@@ -33,9 +33,9 @@ class Player:
             self.gold = int(stats[1])
             self.hp = int(stats[2])
             self.maxhp = int(stats[3])
-            self.lvl = int(stats[4])
+            self.level = int(stats[4])
             self.xp = int(stats[5])
-            self.loc = stats[6]
+            self.location = int(stats[6])
             self.house = toBool(stats[7])
             saveFile.close()
             return True
@@ -50,9 +50,9 @@ class Player:
             "gold="+str(self.gold),
             "hp="+str(self.hp),
             "maxhp="+str(self.maxhp),
-            "lvl="+str(self.lvl),
+            "lvl="+str(self.level),
             "xp="+str(self.xp),
-            "loc="+str(self.loc),
+            "loc="+str(self.location),
             "house="+str(self.house)]
         try:
             for stat in stats:
@@ -62,7 +62,7 @@ class Player:
         except Exception as ex:
             return False
 
-    def setStats(self, name, gold, hp, maxhp, lvl):
+    def setStats(self, name, gold, hp, maxhp, level):
         """This is used for creating enemy players. Maybe if I implement a duel
             arena one day."""
         pass
@@ -92,6 +92,7 @@ class Enemy:
 ### START ###
 player = Player()
 version = "Python ALPHA Version 0.2"
+locations = ["Falconwood"]
 
 def main():
     print("Welcome to Epic Quest: Text Quest, the Python game.")
@@ -184,14 +185,16 @@ def about():
     print(version)
     print("Made by Ryan\n")
     print("Based off Epic Quest: Quest for Epicness, the\ncomputer",
-          "role-playing game by the same author.\n")
+          "role-playing game by the same author.")
+    print()
     print("Copyright (C) RyGuyGames Inc. All rights reserved.")
     pause()
 
 def changeLog():
     clearScreen()
     print("Epic Quest: Text Quest")
-    print(version + "\n")
+    print(version)
+    print()
     print("Change Log:")
     print("* Fixed a bug that broke saving that popped up while migrating to the new\n" +
           "engine.")
@@ -211,7 +214,33 @@ def changeLog():
 
 
 def mainMenu():
-    pass
+    clearScreen()
+    print("Epic Quest: Text Quest")
+    print()
+    print(player.name)
+    print("Level", str(player.level))
+    print("Health: " + str(player.hp) + "/" + str(player.maxhp))
+    print()
+    print("You are currenlty located in", locations[player.location])
+    print()
+    print("What would you like to do?")
+    createMenu(
+        getOptionOne(),
+        "Look Around",
+        "Rest at the Inn",
+        "View Inventory",
+        "Travel",
+        "Quit")
+    c = getChoice(6)
+    
+    pause()
+
+def getOptionOne():
+    if player.location == 0:
+        if player.house:
+            return "Go Home"
+        return "Real Estate Agent"
+    return "Find an Enemy to Fight"
 
 ### HELPER FUNCTIONS ###
 def pause():
@@ -222,20 +251,23 @@ def clearScreen():
         print()
 
 def createMenu(*args):
-    for i in range(0, len(args)):
+    for i in range(len(args)):
         print(str(i+1) + ".", args[i])
 
 def getChoice(numberOfChoices, question="Your Choice: "):
     while True:
-        c = input('\n' + question)
+        print()
+        c = input(question)
         try:
             if int(c) in range(numberOfChoices+1):
                 return c
             else:
-                print("\nPlease select an option from the menu.")
+                print()
+                print("Please select an option from the menu.")
                 pause()
         except:
-            print("\nPlease select an option from the menu.")
+            print()
+            print("Please select an option from the menu.")
             pause()
 
 def yesOrNo(question):
