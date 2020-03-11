@@ -100,10 +100,10 @@ def main():
     if startMenu():
         while mainMenu():
             pass
+    clearScreen()
     print("\nThank you for playing Epic Quest: Text Quest.")
     pause()
     ## CHANGE TO EXIT
-    clearScreen()
 
 def startMenu():
     while True:
@@ -119,21 +119,21 @@ def startMenu():
             "Exit")
         c = getChoice(5)
         
-        if c == "1":
+        if c == 1:
             if newGame():
                 return True
             
-        elif c == "2":
+        elif c == 2:
             if loadGame():
                 return True
             
-        elif c == "3":
+        elif c == 3:
             about()
             
-        elif c == "4":
+        elif c == 4:
             changeLog()
             
-        elif c == "5":
+        elif c == 5:
             if yesOrNo("Are you sure you want to quit?"):
                 return False
 
@@ -232,8 +232,36 @@ def mainMenu():
         "Travel",
         "Quit")
     c = getChoice(6)
+    if c == 1:
+        # processOptionOne()
+        pass
+
+    elif c == 2:
+        # lookAround()
+        pass
     
-    pause()
+    elif c == 3:
+        # inn()
+        pass
+
+    elif c == 4:
+        inventory()
+
+    elif c == 5:
+        # travel()
+        pass
+    
+    elif c == 6:
+        if yesOrNo("Are you sure you want to quit?"):
+            return False
+
+    else:
+        clearScreen()
+        print("\n\n***FATAL ERROR, TERMINATING***\n\n")
+        sleep(2)
+        exit()
+
+    return True
 
 def getOptionOne():
     if player.location == 0:
@@ -241,6 +269,9 @@ def getOptionOne():
             return "Go Home"
         return "Real Estate Agent"
     return "Find an Enemy to Fight"
+
+def inventory():
+    pass
 
 ### HELPER FUNCTIONS ###
 def pause():
@@ -260,7 +291,7 @@ def getChoice(numberOfChoices, question="Your Choice: "):
         c = input(question)
         try:
             if int(c) in range(numberOfChoices+1):
-                return c
+                return int(c)
             else:
                 print()
                 print("Please select an option from the menu.")
