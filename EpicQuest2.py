@@ -2,6 +2,7 @@
 # Python ALPHA Version 0.2
 from time import sleep
 from random import randint
+import os
 
 class Player:
     """Holds all the data for the current player. Can also be used to create
@@ -92,7 +93,7 @@ class Enemy:
 ### START ###
 player = Player()
 version = "Python ALPHA Version 0.2"
-locations = ["Falconwood"]
+locations = ["Falconwood", "Bywater"]
 
 def main():
     print("Welcome to Epic Quest: Text Quest, the Python game.")
@@ -241,8 +242,7 @@ def mainMenu():
         pass
     
     elif c == 3:
-        # inn()
-        pass
+        inn()
 
     elif c == 4:
         inventory()
@@ -273,13 +273,31 @@ def getOptionOne():
 def inventory():
     pass
 
+def inn():
+    clearScreen()
+    print(player.name)
+    print("Health: " + str(player.hp) + "/" + str(player.maxhp))
+    print("Gold:", str(player.gold))
+    print()
+    print("Welcome to the inn!")
+    print("Here you can rest to regain your heatlh.")
+    if yesOrNo("Would you like to rest? It will cost 10 gold."):
+        player.gold -= 10
+        player.hp = player.maxhp
+        player.save()
+        clearScreen()
+        print("You spend the night at the inn.\nYou wake up feeling refreshed")
+        pause()
+    
+
 ### HELPER FUNCTIONS ###
 def pause():
     input("\nPress [ENTER] to continue...")
 
 def clearScreen():
-    for i in range(50):
-        print()
+    """for i in range(50):
+        print()"""
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def createMenu(*args):
     for i in range(len(args)):
