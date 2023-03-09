@@ -1,6 +1,7 @@
 from player import Player
 
 def get_bytes(value) -> bytes:
+    """Convert a specific datatype to bytes for saving"""
     if isinstance(value, str):
         return value.encode()
     elif isinstance(value, int):
@@ -10,6 +11,7 @@ def get_bytes(value) -> bytes:
     
 
 def get_data(value: bytes, data_type: type):
+    """Convert bytes to a specific datatype for loading"""
     if data_type == str:
         return value.decode()
     elif data_type == int:
@@ -62,6 +64,7 @@ def load(name: str) -> Player:
             # Convert the binary data to whatever datatype the class member is
             # We need to trim the end of the value by 1 to get rid of the newline character
             player_data[key] = get_data(value[:-1], type(player_data[key]))
+
 
     return loaded_player
 
