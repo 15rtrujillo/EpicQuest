@@ -9,5 +9,5 @@ class LogManager:
     def get_logger() -> Logger:
         """Get the logger object"""
         if LogManager.__logger == None:
-            LogManager.__logger = Logger(f"{test_name}.log")
+            LogManager.__logger = Logger(f"epicquest.log")
         return LogManager.__logger
