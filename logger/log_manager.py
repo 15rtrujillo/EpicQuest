@@ -1,4 +1,6 @@
-from logger import Logger
+from logger.logger import Logger
+
+import file_utils
 
 
 class LogManager:
@@ -9,5 +11,5 @@ class LogManager:
     def get_logger() -> Logger:
         """Get the logger object"""
         if LogManager.__logger == None:
-            LogManager.__logger = Logger(f"epicquest.log")
+            LogManager.__logger = Logger(file_utils.get_file_path("epicquest.log"))
         return LogManager.__logger

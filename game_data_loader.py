@@ -1,8 +1,9 @@
-from log_manager import LogManager
+from logger.log_manager import LogManager
+from map import Map
 from room import Room
 
 import json
-import utils
+import file_utils
 
 
 game_map = dict()
@@ -13,7 +14,8 @@ def load_map_file(map_file_name: str):
     map_file_name: The name of the map file to load"""
 
     # Get the absolute path for the map file
-    map_file_name = utils.get_file_path(f"defs/{map_file_name}")
+    # FIXME: This needs to be updated to use the maps path
+    map_file_name = file_utils.get_file_path(f"defs/{map_file_name}")
 
     # Attempt to open the map file
     map_file = None
@@ -29,6 +31,9 @@ def load_map_file(map_file_name: str):
     except json.JSONDecodeError:
         LogManager.get_logger().error(f"Error reading map file: {map_file_name} - The file is possibly corrupted.")
         return
+    
+    # Get the map's ID and name
+    new_map = Map(map_json["id"], map_json["name"])
 
     # Loop through every object in the JSON array to create a new room
     for json_obj in map_json:
@@ -40,11 +45,14 @@ def load_map_file(map_file_name: str):
                 new_room.__dict__[key] = value
 
         # Add the room to the map
-        game_map[new_room.id] = new_room
+        if not new_room.id in game_map.keys():
+            game_map[new_room.id] = new_room
+        else:
+            LogManager.get_logger().warn(f"Room ID {new_room.id} in map file {map_file_name} already exists")
 
     map_file.close()
 
-    LogManager.get_logger().info(f"Loaded {len(game_map)} Room definitions")
+    LogManager.get_logger().info(f"Loaded {len(game_map)} Room definitions from {map_file_name}")
 
 
 def load_all():

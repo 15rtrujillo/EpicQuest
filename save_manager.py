@@ -1,7 +1,7 @@
-from player import Player
-from log_manager import LogManager
+from entity.player import Player
+from logger.log_manager import LogManager
 
-import utils
+import file_utils
 
 
 def get_bytes(value) -> bytes:
@@ -27,7 +27,7 @@ def get_data(value: bytes, data_type: type):
 def save(player: Player):
     """Save a player to a binary file at \"[player_name].eq\"
     player: The player to save"""
-    save_file_name = utils.get_file_path(f"saves/{player.name}.eq")
+    save_file_name = file_utils.get_file_path(f"saves/{player.name}.eq")
     try:
         with open(save_file_name, "wb") as save_file:
             save_data = b""
@@ -40,14 +40,18 @@ def save(player: Player):
             save_file.write(save_data)
     except FileNotFoundError:
         LogManager.get_logger().error("Saves directory not found. Creating...")
-        utils.create_saves_directory()
-        save(player)
+        try:
+            file_utils.create_saves_directory()
+            save(player)
+        except:
+            LogManager.get_logger().error("Error creating saves directory. Exiting program.")
+            exit(1)
 
 
 def load(name: str) -> Player:
     """Load a player from a binary file
     name: The name of the player to attempt to load"""
-    save_file_name = utils.get_file_path(f"saves/{name}.eq")
+    save_file_name = file_utils.get_file_path(f"saves/{name}.eq")
 
     loaded_data = dict()
 
