@@ -1,6 +1,9 @@
 from player import Player
 from log_manager import LogManager
 
+import utils
+
+
 def get_bytes(value) -> bytes:
     """Convert a specific datatype to bytes for saving"""
     if isinstance(value, str):
@@ -24,32 +27,34 @@ def get_data(value: bytes, data_type: type):
 def save(player: Player):
     """Save a player to a binary file at \"[player_name].eq\"
     player: The player to save"""
-    save_file_name = player.name + ".eq"
-    with open(save_file_name, "wb") as save_file:
-        save_data = b""
-        player_data = player.__dict__
-        for key, value in player_data.items():
-            save_data += key.encode()
-            save_data += b":"
-            save_data += get_bytes(value)
-            save_data += b"\n"
-        save_file.write(save_data)
+    save_file_name = utils.get_file_path(f"saves/{player.name}.eq")
+    try:
+        with open(save_file_name, "wb") as save_file:
+            save_data = b""
+            player_data = player.__dict__
+            for key, value in player_data.items():
+                save_data += key.encode()
+                save_data += b":"
+                save_data += get_bytes(value)
+                save_data += b"\n"
+            save_file.write(save_data)
+    except FileNotFoundError:
+        LogManager.get_logger().error("Saves directory not found. Creating...")
+        utils.create_saves_directory()
+        save(player)
 
 
 def load(name: str) -> Player:
     """Load a player from a binary file
     name: The name of the player to attempt to load"""
-    save_file_name = name + ".eq"
+    save_file_name = utils.get_file_path(f"saves/{name}.eq")
 
     loaded_data = dict()
 
     # Read in everything from the file to populate the dictionary
     try:
         with open(save_file_name, "rb") as save_file:
-            while True:
-                line = save_file.readline()
-                if not line:
-                    break
+            for line in save_file.readlines():
                 line_data = line.split(b":")
                 key = line_data[0].decode()
                 value = line_data[1]
@@ -82,7 +87,7 @@ if __name__ == "__main__":
     test.maxhp = 200
     test.level = 4
     print(test.__dict__)
-    # save(test)
-    loaded_test = load("dog")
+    save(test)
+    loaded_test = load("test")
 
     print(loaded_test.__dict__)
