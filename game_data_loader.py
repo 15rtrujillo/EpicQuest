@@ -2,6 +2,7 @@ from logger.log_manager import LogManager
 from map import Map
 from entity.npc import Npc
 from room import Room
+from world import World
 
 
 import json
@@ -103,14 +104,16 @@ def load_all():
     # Map files
     map_files = file_utils.get_files_in_directory(file_utils.get_maps_directory())
     for map_file in map_files:
-        # TODO: Figure out what to actually do with the loaded map. Like, where to store the master map?
-        load_map_file(map_file)
+        new_map = load_map_file(map_file)
+        if new_map != None:
+            World.add_map(new_map)
 
     # NPC files
     npc_files = file_utils.get_files_in_directory(file_utils.get_npcs_directory())
     for npc_file in npc_files:
-        # TODO: Pretty much same as above
-        load_npc_file(npc_file)
+        new_npcs = load_npc_file(npc_file)
+        for new_npc in new_npcs:
+            World.add_npc(new_npc)
 
 
 if __name__ == "__main__":
