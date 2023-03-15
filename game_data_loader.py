@@ -2,25 +2,23 @@ from logger.log_manager import LogManager
 from map import Map
 from room import Room
 
+
 import json
 import file_utils
 
 
-game_map = dict()
-
-
-def load_map_file(map_file_name: str):
-    """Load a map file
+def load_map_file(map_file_name: str) -> Map:
+    """Load a map file and return a map dictionary of Room IDs to Room objects
     map_file_name: The name of the map file to load"""
 
     # Get the absolute path for the map file
-    # FIXME: This needs to be updated to use the maps path
-    map_file_name = file_utils.get_file_path(f"defs/{map_file_name}")
+    map_files_path = file_utils.get_maps_directory()
+    map_file_path = file_utils.get_file_path(map_files_path + "/" + map_file_name)
 
     # Attempt to open the map file
     map_file = None
     try:
-        map_file = open(map_file_name, "r")
+        map_file = open(map_file_path, "r")
     except FileNotFoundError:
         LogManager.get_logger().error(f"Could not open map file: {map_file_name} - The file does not exist.")
         return
@@ -35,31 +33,36 @@ def load_map_file(map_file_name: str):
     # Get the map's ID and name
     new_map = Map(map_json["id"], map_json["name"])
 
-    # Loop through every object in the JSON array to create a new room
-    for json_obj in map_json:
+    # Get the rooms. This should return a list of Room objects
+    rooms = map_json["rooms"]
+    for room in rooms:
         new_room = Room()
-
-        # Now loop through every attribute of the JSON object and assign it to a class member
-        for key, value in json_obj.items():
+        
+        # Loop through the key, value pairs in the room object
+        for key, value in room.items():
+            # Make sure we're only attempting to add good data
             if key in new_room.__dict__.keys():
                 new_room.__dict__[key] = value
-
-        # Add the room to the map
-        if not new_room.id in game_map.keys():
-            game_map[new_room.id] = new_room
-        else:
-            LogManager.get_logger().warn(f"Room ID {new_room.id} in map file {map_file_name} already exists")
+        
+        # Add the new room to the map
+        new_map.add_room(new_room)
 
     map_file.close()
 
-    LogManager.get_logger().info(f"Loaded {len(game_map)} Room definitions from {map_file_name}")
+    LogManager.get_logger().info(f"Loaded {len(new_map.rooms)} Room definitions from {map_file_name}")
+
+    return new_map
 
 
 def load_all():
     """Load all game definitions"""
-    load_map_file("game_map.eqm")
+    # TODO: Loop through maps directory and load all map files
+    pass
 
 
 if __name__ == "__main__":
-    """Try to read the room file dumped from the Room class test to test map loader"""
-    load_map_file("room.eqm")
+    """Try to read the test map file dumped from the Map class test to test map loader"""
+    test_map = load_map_file("test_map.eqm")
+
+    for key, value in test_map.__dict__.items():
+        print(key, value)

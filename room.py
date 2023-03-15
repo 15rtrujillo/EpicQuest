@@ -1,7 +1,7 @@
 class Room:
     """Holds information about a map location"""
 
-    def __init__(self, id: int = -1, name: str = "", desc: str = "", n: int = -1, ne: int = -1, e: int = -1, se: int = -1, s: int = -1, sw: int = -1, w: int = -1, nw: int = -1, up: int = -1, down: int = -1):
+    def __init__(self, id: int = -1, name: str = "", desc: str = "", n: int = -1, ne: int = -1, e: int = -1, se: int = -1, s: int = -1, sw: int = -1, w: int = -1, nw: int = -1, up: int = -1, down: int = -1, npcs: list[int] = list(), items: list[int] = list()):
         """Create a new Room with links to attached rooms
         id: The ID of the room
         name: The name of the room
@@ -15,7 +15,9 @@ class Room:
         w: The ID of the room to the west
         nw: The ID of the room to the northwest
         up: The ID of the room above this one
-        down: The ID of the room below this one"""
+        down: The ID of the room below this one
+        npcs: A list of NPC IDs in the room
+        items: A list of item IDs in the room"""
         self.id = id
         self.name = name
         self.desc = desc
@@ -29,11 +31,5 @@ class Room:
         self.nw = nw
         self.up = up
         self.down = down
-
-
-if __name__ == "__main__":
-    """Dumps the Room class to a map file for testing"""
-    import json
-    temp = Room(-1, "", "")
-    file = open("room.eqm", "wb")
-    file.write(json.dumps([temp], default=lambda o: o.__dict__, indent=4).encode())
+        self.npcs = npcs
+        self.items = items
