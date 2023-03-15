@@ -56,8 +56,10 @@ def load_map_file(map_file_name: str) -> Map:
 
 def load_all():
     """Load all game definitions"""
-    # TODO: Loop through maps directory and load all map files
-    pass
+    map_files = file_utils.get_files_in_directory(file_utils.get_maps_directory())
+    for map_file in map_files:
+        # TODO: Figure out what to actually do with the loaded map. Like, where to store the master map?
+        load_map_file(map_file)
 
 
 if __name__ == "__main__":

@@ -24,28 +24,32 @@ def get_data(value: bytes, data_type: type):
         return bool.from_bytes(value, "big")
 
 
+def get_saves() -> list[str]:
+    """Get the names of the players saved in the saves directory"""
+    save_files = file_utils.get_files_in_directory(file_utils.get_saves_directory())
+
+    player_names = []
+    for file in save_files:
+        if file.find(".eq") == -1:
+            continue
+        player_names.append(file[:file.find(".eq")])
+    return player_names
+
+
 def save(player: Player):
     """Save a player to a binary file at \"[player_name].eq\"
     player: The player to save"""
     save_file_name = file_utils.get_file_path(f"saves/{player.name}.eq")
-    try:
-        with open(save_file_name, "wb") as save_file:
-            save_data = b""
-            player_data = player.__dict__
-            for key, value in player_data.items():
-                save_data += key.encode()
-                save_data += b":"
-                save_data += get_bytes(value)
-                save_data += b"\n"
-            save_file.write(save_data)
-    except FileNotFoundError:
-        LogManager.get_logger().error("Saves directory not found. Creating...")
-        try:
-            file_utils.create_saves_directory()
-            save(player)
-        except:
-            LogManager.get_logger().error("Error creating saves directory. Exiting program.")
-            exit(1)
+    
+    with open(save_file_name, "wb") as save_file:
+        save_data = b""
+        player_data = player.__dict__
+        for key, value in player_data.items():
+            save_data += key.encode()
+            save_data += b":"
+            save_data += get_bytes(value)
+            save_data += b"\n"
+        save_file.write(save_data)
 
 
 def load(name: str) -> Player:
@@ -95,3 +99,5 @@ if __name__ == "__main__":
     loaded_test = load("test")
 
     print(loaded_test.__dict__)
+
+    print(get_saves())

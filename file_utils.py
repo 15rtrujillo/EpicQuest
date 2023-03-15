@@ -10,6 +10,12 @@ def get_file_path(file_name: str) -> str:
     return os.path.join(script_path, os.path.relpath(file_name))
 
 
+def get_files_in_directory(directory: str) -> list[str]:
+    """Returns a list of the names of all the files in a directory"""
+    files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+    return files
+
+
 def get_saves_directory() -> str:
     """Returns the directory for save files"""
     return os.path.join(script_path, "saves")
