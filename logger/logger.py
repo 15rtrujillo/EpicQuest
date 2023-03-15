@@ -4,6 +4,9 @@ from datetime import datetime
 class Logger:
     """Handles logging to a file"""
 
+    DEBUG = False
+
+
     def __init__(self, file_name: str):
         """Create a Logger
         file_name: The desired name of the file to log to"""
@@ -32,8 +35,14 @@ class Logger:
         """Log a message to file
         message_type: The type of message to log. Will be prefixed to the message
         message: The message to be logged"""
+        log_message = f"[{self.__get_timestamp()}] [{message_type}] {message}\n"
+
+        # If debug mode is on, we will print log messages to the console as well as to file
+        if Logger.DEBUG:
+            print(log_message)
+
         with open(self.file_name, "a") as log_file:
-            log_file.write(f"[{self.__get_timestamp()}] [{message_type}] {message}\n")
+            log_file.write(log_message)
 
 
     def __get_timestamp(self) -> str:

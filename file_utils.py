@@ -11,7 +11,7 @@ def get_file_path(file_name: str) -> str:
 
 
 def get_files_in_directory(directory: str) -> list[str]:
-    """Returns a list of the names of all the files in a directory"""
+    """Returns a list of the names of all the files in a directory (including extensions)"""
     files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
     return files
 
@@ -26,8 +26,13 @@ def get_maps_directory() -> str:
     return os.path.join(script_path, os.path.relpath("defs/maps"))
 
 
+def get_npcs_directory() -> str:
+    """Returns the directory for the NPC files"""
+    return os.path.join(script_path, os.path.relpath("defs/npcs"))
+
+
 def create_saves_directory():
-    """Creates the directory for storing save files"""
+    """Creates the directory for storing save files - Unused"""
     os.mkdir(get_saves_directory())
 
 

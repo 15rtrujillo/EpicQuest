@@ -1,6 +1,5 @@
 class Player:
-    """Holds all the data for players. Can also be used to create
-        enemy players."""
+    """Holds all the data for players."""
 
     def __init__(self, name: str):
         """Create a new player with default values
@@ -10,4 +9,5 @@ class Player:
         self.hp = 100
         self.level = 1
         self.xp = 0
-        self.location = 0
+        self.map = 0
+        self.room = 0

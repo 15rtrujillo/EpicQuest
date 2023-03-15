@@ -1,5 +1,6 @@
 from logger.log_manager import LogManager
 from map import Map
+from entity.npc import Npc
 from room import Room
 
 
@@ -8,7 +9,7 @@ import file_utils
 
 
 def load_map_file(map_file_name: str) -> Map:
-    """Load a map file and return a map dictionary of Room IDs to Room objects
+    """Load a map file and return a new Map object containing all the loaded Rooms.
     map_file_name: The name of the map file to load"""
 
     # Get the absolute path for the map file
@@ -54,12 +55,62 @@ def load_map_file(map_file_name: str) -> Map:
     return new_map
 
 
+def load_npc_file(npc_file_name: str) -> list[Npc]:
+    """Load a NPC file and return a list of loaded NPCs.
+    npc_file_name: The name of the map file to load"""
+    # Get the absolute path for the map file
+    npc_files_path = file_utils.get_npcs_directory()
+    npc_file_path = file_utils.get_file_path(npc_files_path + "/" + npc_file_name)
+
+    # Attempt to open the map file
+    npc_file = None
+    try:
+        npc_file = open(npc_file_path, "r")
+    except FileNotFoundError:
+        LogManager.get_logger().error(f"Could not open NPC file: {npc_file_name} - The file does not exist.")
+        return
+    
+    # Attempt to load the JSON from file
+    try:
+        npc_json = json.loads(npc_file.read())
+    except json.JSONDecodeError:
+        LogManager.get_logger().error(f"Error reading map file: {npc_file_name} - The file is possibly corrupted.")
+        return
+    
+    # The npc_json should be a list of JSON objects. We will loop through these objects and create NPCs
+    npcs = []
+    for npc in npc_json:
+        new_npc = Npc()
+
+        # Loop through the key, value pairs in the Npc JSON object
+        for key, value in npc.items():
+            # Make sure we're only attempting to add good data
+            if key in new_npc.__dict__.keys():
+                new_npc.__dict__[key] = value
+        
+        # Add the new room to the map
+        npcs.append(new_npc)
+
+    npc_file.close()
+
+    LogManager.get_logger().info(f"Loaded {len(npcs)} NPC definitions from {npc_file_name}")
+
+    return npcs
+
+
 def load_all():
     """Load all game definitions"""
+    # Map files
     map_files = file_utils.get_files_in_directory(file_utils.get_maps_directory())
     for map_file in map_files:
         # TODO: Figure out what to actually do with the loaded map. Like, where to store the master map?
         load_map_file(map_file)
+
+    # NPC files
+    npc_files = file_utils.get_files_in_directory(file_utils.get_npcs_directory())
+    for npc_file in npc_files:
+        # TODO: Pretty much same as above
+        load_npc_file(npc_file)
 
 
 if __name__ == "__main__":
@@ -68,3 +119,8 @@ if __name__ == "__main__":
 
     for key, value in test_map.__dict__.items():
         print(key, value)
+
+    test_npcs = load_npc_file("test_npcs.eqn")
+
+    for npc in test_npcs:
+        print(npc)
