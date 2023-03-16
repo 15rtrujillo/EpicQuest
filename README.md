@@ -1,3 +1,6 @@
+2023/03/16
+I've started to rethink having quests in custom files. I think it would work better as Python scripts, and I can supply functions to make quest writing easier. This is what the stuff in the "plugins" directory is for.
+
 2023/03/10
 I've decided to actually start fleshing this out. I'm finding it kind of enjoyable writing a bunch of systems that could support a sort of "modular" game where everything is loaded from files insteaded of baked into the code. Most the definitions for things like items, NPCs, and map data will be stored using JSON, but I give them custom file extensions because it's cool.
 

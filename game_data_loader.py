@@ -103,16 +103,22 @@ def load_all():
     """Load all game definitions"""
     # Map files
     map_files = file_utils.get_files_in_directory(file_utils.get_maps_directory())
-    for map_file in map_files:
+    for i, map_file in enumerate(map_files):
+        # Make sure it's a map file
+        if map_file[-3:] != "eqm":
+            continue
+        print(f"Loading map {i+1}/{len(map_files)}...")
         new_map = load_map_file(map_file)
         if new_map != None:
             World.add_map(new_map)
 
     # NPC files
     npc_files = file_utils.get_files_in_directory(file_utils.get_npcs_directory())
-    for npc_file in npc_files:
+    for i, npc_file in enumerate(npc_files):
+        print(f"Loading NPC file {i+1}/{len(npc_files)}...")
         new_npcs = load_npc_file(npc_file)
-        for new_npc in new_npcs:
+        for j, new_npc in enumerate(new_npcs):
+            print(f"Loading NPC {j+1}/{len(new_npcs)}...")
             World.add_npc(new_npc)
 
 
