@@ -105,7 +105,7 @@ def load_all():
     map_files = file_utils.get_files_in_directory(file_utils.get_maps_directory())
     for i, map_file in enumerate(map_files):
         # Make sure it's a map file
-        if map_file[-3:] != "eqm":
+        if map_file.find(".eqm") == -1:
             continue
         print(f"Loading map {i+1}/{len(map_files)}...")
         new_map = load_map_file(map_file)
@@ -115,6 +115,9 @@ def load_all():
     # NPC files
     npc_files = file_utils.get_files_in_directory(file_utils.get_npcs_directory())
     for i, npc_file in enumerate(npc_files):
+        # Make sure it's a map file
+        if npc_file.find(".eqn") == -1:
+            continue
         print(f"Loading NPC file {i+1}/{len(npc_files)}...")
         new_npcs = load_npc_file(npc_file)
         for j, new_npc in enumerate(new_npcs):

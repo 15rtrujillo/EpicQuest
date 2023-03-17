@@ -72,7 +72,7 @@ def load(name: str) -> Player:
         return None
 
     # Get all the attributes from the player class
-    loaded_player = Player(name)
+    loaded_player = Player(loaded_data["name"])
     player_data = loaded_player.__dict__
 
     # Match the stuff from the file to the player class
