@@ -23,14 +23,14 @@ def load_map_file(map_file_name: str) -> Map:
         map_file = open(map_file_path, "r")
     except FileNotFoundError:
         LogManager.get_logger().error(f"Could not open map file: {map_file_name} - The file does not exist.")
-        return
+        return None
     
     # Attempt to load the JSON from file
     try:
         map_json = json.loads(map_file.read())
     except json.JSONDecodeError:
         LogManager.get_logger().error(f"Error reading map file: {map_file_name} - The file is possibly corrupted.")
-        return
+        return None
     
     # Get the map's ID and name
     new_map = Map(map_json["id"], map_json["name"])
@@ -69,14 +69,14 @@ def load_npc_file(npc_file_name: str) -> list[Npc]:
         npc_file = open(npc_file_path, "r")
     except FileNotFoundError:
         LogManager.get_logger().error(f"Could not open NPC file: {npc_file_name} - The file does not exist.")
-        return
+        return None
     
     # Attempt to load the JSON from file
     try:
         npc_json = json.loads(npc_file.read())
     except json.JSONDecodeError:
         LogManager.get_logger().error(f"Error reading map file: {npc_file_name} - The file is possibly corrupted.")
-        return
+        return None
     
     # The npc_json should be a list of JSON objects. We will loop through these objects and create NPCs
     npcs = []
@@ -107,19 +107,26 @@ def load_all():
         # Make sure it's a map file
         if map_file.find(".eqm") == -1:
             continue
+
         print(f"Loading map {i+1}/{len(map_files)}...")
         new_map = load_map_file(map_file)
-        if new_map != None:
+        if new_map is not None:
             World.add_map(new_map)
 
     # NPC files
     npc_files = file_utils.get_files_in_directory(file_utils.get_npcs_directory())
     for i, npc_file in enumerate(npc_files):
-        # Make sure it's a map file
+        # Make sure it's a NPC file
         if npc_file.find(".eqn") == -1:
             continue
+
         print(f"Loading NPC file {i+1}/{len(npc_files)}...")
         new_npcs = load_npc_file(npc_file)
+
+        # Make sure we didn't hit any errors
+        if new_npcs is None:
+            continue
+
         for j, new_npc in enumerate(new_npcs):
             print(f"Loading NPC {j+1}/{len(new_npcs)}...")
             World.add_npc(new_npc)

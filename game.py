@@ -21,7 +21,8 @@ def new_game() -> bool:
     name_good = False
     player_name = ""
     while not name_good:
-        player_name = get_text_input("Please enter a name for your character or press ENTER to return to the main menu\n")
+        player_name = get_text_input("Please enter a name for your character or press ENTER to return to the main "
+                                     "menu\n")
         
         if player_name == "":
             return False
@@ -68,7 +69,7 @@ def load_game() -> bool:
         # Load the player
         global player
         player = save_manager.load(response)
-        if player == None:
+        if player is None:
             print()
             print("There was an error loading that character")
             print("Check the log file for more information")
@@ -97,9 +98,9 @@ def about():
     pause()
 
 
-def quit():
+def exit_game():
     """Quit the game and save the player"""
-    if player != None:
+    if player is not None:
         save_manager.save(player)
     print()
     print("Thank you for playing Epic Quest.")
@@ -129,7 +130,7 @@ def main_menu():
         elif choice == 3:
             about()
         elif choice == 4:
-            quit()
+            exit_game()
 
 
 def main():
@@ -144,15 +145,17 @@ def main():
     main_menu()
 
 
-def get_text_input(prompt: str = "Your answer: ", allowed_responses: list[str] = None, case_sensitive: bool = False) -> str:
+def get_text_input(prompt: str = "Your answer: ", allowed_responses: list[str] = None,
+                   case_sensitive: bool = False) -> str:
     """Gets string input from the user.
     prompt: The prompt to be displayed to the user
-    allowed_responses: If this is not None, the user's input will be checked against a list of allowed responses. If the user enters an invalid response, they will be prompted to try again
+    allowed_responses: If this is not None, the user's input will be checked against a list of allowed responses. If the
+    user enters an invalid response, they will be prompted to try again
     case_sensitive: All string comparisons will be case-sensitive if this is set"""
     while True:
         response = input(prompt)
         # If we don't care about validating the response
-        if allowed_responses == None:
+        if allowed_responses is None:
             return response
         
         # If we want to be case-sensitive
@@ -171,7 +174,8 @@ def get_text_input(prompt: str = "Your answer: ", allowed_responses: list[str] =
 def get_int_input(prompt: str = "Your choice: ", number_of_choices: int = -1) -> int:
     """Get integer input from the user. Will loop until the user enters a valid input
     prompt: The prompt to be displayed to the user
-    number_of_choices: If this is not -1, then the function will also validate if the user has entered a number between 1 and number_of_choices (inclusive)"""
+    number_of_choices: If this is not -1, then the function will also validate if the user has entered a number between
+    1 and number_of_choices (inclusive)"""
     while True:
         c = input(prompt)
         try:
@@ -181,7 +185,7 @@ def get_int_input(prompt: str = "Your choice: ", number_of_choices: int = -1) ->
                 print()
                 print("Please input a valid option")
                 print()
-        except:
+        except ValueError:
             print()
             print("Please input a number")
             print()

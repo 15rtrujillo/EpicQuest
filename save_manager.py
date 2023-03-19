@@ -72,7 +72,7 @@ def load(name: str) -> Player:
         return None
 
     # Get all the attributes from the player class
-    loaded_player = Player(loaded_data["name"])
+    loaded_player = Player(loaded_data["name"].decode())
     player_data = loaded_player.__dict__
 
     # Match the stuff from the file to the player class
@@ -83,7 +83,8 @@ def load(name: str) -> Player:
             # We need to trim the end of the value by 1 to get rid of the newline character
             player_data[key] = get_data(value[:-1], type(player_data[key]))
         else:
-            LogManager.get_logger().warn(f"Key `{key}` found in save file with value `{value}`. This has most likely been deprecated and will be removed the next time the player is saved.")
+            LogManager.get_logger().warn(f"Key `{key}` found in save file with value `{value}`. This has most likely "
+                                         f"been deprecated and will be removed the next time the player is saved.")
 
     return loaded_player
 

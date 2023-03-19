@@ -13,12 +13,12 @@ class Map:
         self.name = name
         self.rooms = dict()
 
-
     def add_room(self, room: Room):
         """Add a room to this map
         room: The room to add"""
         if room.id in self.rooms.keys():
-            LogManager.get_logger().warn(f"Attempted to add Room with ID {room.id} to map with ID {self.id} but a Room with the same ID already exists. New Room was not added.")
+            LogManager.get_logger().warn(f"Attempted to add Room with ID {room.id} to map with ID {self.id} but a "
+                                         f"Room with the same ID already exists. New Room was not added.")
             return
         self.rooms[room.id] = room
 
