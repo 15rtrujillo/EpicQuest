@@ -1,15 +1,21 @@
 from logger.log_manager import LogManager
 from entity.player import Player
+from map import Map
+from time import sleep
+from room import Room
 from world import World
 
 import game_data_loader
 import save_manager
 
 
-player = None
+def intro(name: str):
+    """Play the intro text
+    name: The player's name"""
+    pass
 
 
-def new_game() -> bool:
+def new_game() -> Player:
     """Create a new player.
     Returns True if a player was created successfully"""
     # Get the currently existing saves so the player can't duplicate an existing character
@@ -21,11 +27,11 @@ def new_game() -> bool:
     name_good = False
     player_name = ""
     while not name_good:
-        player_name = get_text_input("Please enter a name for your character or press ENTER to return to the main "
-                                     "menu\n")
+        player_name = get_text_input("Please enter a name for your character "
+                                     "or press ENTER to return to the main menu\n")
         
         if player_name == "":
-            return False
+            return None
         
         # Check if the player name already exists
         name_good = True
@@ -38,15 +44,14 @@ def new_game() -> bool:
                 break
     
     # Create the new player
-    global player
     player = Player(player_name)
     save_manager.save(player)
 
     # TODO: Call the story intro here
-    return True
+    return player
 
 
-def load_game() -> bool:
+def load_game() -> Player:
     """Present a list of the saved characters and let the player choose one to load.
     If the player was loaded successfully, returns True"""
     saves = save_manager.get_saves()
@@ -67,24 +72,23 @@ def load_game() -> bool:
             return False
         
         # Load the player
-        global player
         player = save_manager.load(response)
         if player is None:
             print()
             print("There was an error loading that character")
             print("Check the log file for more information")
             print()
-            return False
+            return None
         print()
         print(player.name, "loaded successfully!")
         print()
-        return True
+        return player
 
     else:
         print("There are no saves to load")
         print()
         pause()
-        return False
+        return None
 
 
 def about():
@@ -98,8 +102,9 @@ def about():
     pause()
 
 
-def exit_game():
-    """Quit the game and save the player"""
+def exit_game(player: Player):
+    """Quit the game and save the player
+    player: The player to save"""
     if player is not None:
         save_manager.save(player)
     print()
@@ -108,9 +113,9 @@ def exit_game():
     exit(0)
 
 
-def main_menu():
+def main_menu() -> Player:
+    """Display the main menu for the game and create/load a player"""
     while True:
-        """Display the main menu for the game"""
         print()
         print("Epic Quest: Text Quest")
         print()
@@ -122,15 +127,18 @@ def main_menu():
         print()
         choice = get_int_input(number_of_choices=4)
         if choice == 1:
-            if new_game():
+            player = new_game()
+            if player is not None:
                 break
         elif choice == 2:
-            if load_game():
+            player = load_game()
+            if player is not None:
                 break
         elif choice == 3:
             about()
         elif choice == 4:
-            exit_game()
+            exit_game(None)
+    return player
 
 
 def main():
@@ -142,15 +150,78 @@ def main():
     game_data_loader.load_all()
     print("Data loaded!")
 
-    main_menu()
+    player = main_menu()
+
+    # Start the main game loop
+    while True:
+        # Load the location
+        current_map = World.world_map[player.map]
+        current_room = current_map.rooms[player.room]
+
+        current_npc_ids = current_room.npcs
+        current_npcs = list()
+        for npc_id in current_npc_ids:
+            current_npcs.append(World.npcs[npc_id])
+
+        current_item_ids = current_room.items
+        current_items = list()
+
+        # Display the room text
+        print()
+        print(current_room.desc)
+        print()
+        for npc in current_npcs:
+            print("You see", npc.name)
+        print()
+
+        """
+        Haven't implemented items yet lol
+        for item in current_items:
+            print(f"You notice a {item.name} on the ground")
+        """
+
+        print_adjacent_rooms(current_map, current_room)
+
+        # Process the player input
+        get_text_input(": ")
+
+
+def print_adjacent_rooms(current_map: Map, current_room: Room):
+    """Prints out the names of all the rooms linked to this one
+    current_map: The map the player is currently located in
+    current_room: The room the plyaer is currently located in"""
+    if current_room.n != -1:
+        next_room = current_map.rooms[current_room.n]
+        print("To the north you see", next_room.name)
+    if current_room.ne != -1:
+        next_room = current_map.rooms[current_room.ne]
+        print("To the northeast you see", next_room.name)
+    if current_room.e != -1:
+        next_room = current_map.rooms[current_room.e]
+        print("To the east you see", next_room.name)
+    if current_room.se != -1:
+        next_room = current_map.rooms[current_room.se]
+        print("To the southeast you see", next_room.name)
+    if current_room.s != -1:
+        next_room = current_map.rooms[current_room.s]
+        print("To the south you see", next_room.name)
+    if current_room.sw != -1:
+        next_room = current_map.rooms[current_room.sw]
+        print("To the southwest you see", next_room.name)
+    if current_room.w != -1:
+        next_room = current_map.rooms[current_room.w]
+        print("To the west you see", next_room.name)
+    if current_room.nw != -1:
+        next_room = current_map.rooms[current_room.nw]
+        print("To the northwest you see", next_room.name)
 
 
 def get_text_input(prompt: str = "Your answer: ", allowed_responses: list[str] = None,
                    case_sensitive: bool = False) -> str:
     """Gets string input from the user.
     prompt: The prompt to be displayed to the user
-    allowed_responses: If this is not None, the user's input will be checked against a list of allowed responses. If the
-    user enters an invalid response, they will be prompted to try again
+    allowed_responses: If this is not None, the user's input will be checked against a list of
+    allowed responses. If the user enters an invalid response, they will be prompted to try again
     case_sensitive: All string comparisons will be case-sensitive if this is set"""
     while True:
         response = input(prompt)
@@ -174,8 +245,8 @@ def get_text_input(prompt: str = "Your answer: ", allowed_responses: list[str] =
 def get_int_input(prompt: str = "Your choice: ", number_of_choices: int = -1) -> int:
     """Get integer input from the user. Will loop until the user enters a valid input
     prompt: The prompt to be displayed to the user
-    number_of_choices: If this is not -1, then the function will also validate if the user has entered a number between
-    1 and number_of_choices (inclusive)"""
+    number_of_choices: If this is not -1, then the function will also validate if the user has entered a
+    number between 1 and number_of_choices (inclusive)"""
     while True:
         c = input(prompt)
         try:

@@ -5,19 +5,14 @@
         {
             "id": 0,
             "name": "a seemingly empty clearing",
-            "desc": "You are standing in an empty clearing. The moon is high in the sky, giving off just enough light to barely make out the shapes of trees in the distance. The wind is blowing through the grass, making a pleasant sound. As you look around, you notice a mysterious figure, watching you from the darkness...",
-            "n": -1,
-            "ne": -1,
-            "e": -1,
-            "se": -1,
-            "s": -1,
-            "sw": -1,
-            "w": -1,
-            "nw": -1,
-            "up": -1,
-            "down": -1,
+            "desc": "You are standing in an empty clearing.\nThe moon is high in the sky, giving off just enough light to barely make out the shapes of trees in the distance.\nThe wind is blowing through the grass, making a pleasant sound.\nAs you look around, you notice a mysterious figure, watching you from the darkness...",
             "npcs": [0],
-            "items": []
+            "east": 1
+        },
+        {
+            "id": 1,
+            "name": "a dark forest",
+            "desc": "As you enter the dark forest, the moonlight is cut off by the canopy of trees overhead.\nYou can hardly see as you continue to press forward into the darkness.\nThe sound of wind blowing through grass is gone, and replaced by silence.\nNothing can be heard except for your own footsteps"
         }
     ]
 }

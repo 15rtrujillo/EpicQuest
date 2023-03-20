@@ -1,7 +1,7 @@
 [
     {
         "id": 0,
-        "name": "Mysterious Figure",
+        "name": "a mysterious figure",
         "desc": "As you gaze upon the figure before you, you are struck by an eerie feeling. The figure is cloaked and hooded all in black, its form almost indistinguishable in the dim light. The cloak flows in the gentle breeze, but its face remains hidden from view. You strain your eyes, attempting to make out any detail, but there is none to be found. The figure stands as still as a statue. Its presence alone sends shivers down your spine, and you can't help but wonder what kind of being could be so mysterious and elusive.",
         "hp": 100,
         "attackable": false
