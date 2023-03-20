@@ -1,12 +1,17 @@
-from logger.log_manager import LogManager
+from entity.npc import Npc
 from entity.player import Player
+from logger.log_manager import LogManager
 from map import Map
-from time import sleep
+from plugins.default import Default
+from plugins.triggers.travel_to_room_trigger import TravelToRoomTrigger
 from room import Room
 from world import World
 
 import game_data_loader
 import save_manager
+
+
+direction_words = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest", "up", "down"]
 
 
 def intro(name: str):
@@ -160,8 +165,10 @@ def main():
 
         current_npc_ids = current_room.npcs
         current_npcs = list()
-        for npc_id in current_npc_ids:
-            current_npcs.append(World.npcs[npc_id])
+
+        if current_item_ids is not None:
+            for npc_id in current_npc_ids:
+                current_npcs.append(World.npcs[npc_id])
 
         current_item_ids = current_room.items
         current_items = list()
@@ -183,37 +190,83 @@ def main():
         print_adjacent_rooms(current_map, current_room)
 
         # Process the player input
-        get_text_input(": ")
+        process_input(player, current_map, current_room, 
+                      current_npcs)
+
+
+def process_input(player: Player, current_map: map, current_room: Room,
+                  current_npcs: list[Npc]):
+    """Decide what to do based on what the user inputs
+    player: The player object
+    current_map: The map the player is currently in
+    current_room: The room the player is currently in
+    current_npcs: A list of the NPCs in the room"""
+
+    # Create lists of trigger words to check for
+    travel_words = ["go", "travel", "head", "walk"]
+    talk_words = ["speak", "talk", "approach"]
+    attack_words = ["fight", "attack", "battle"]
+    examine_words = ["look", "examine", "study"]
+    help_words = ["help", "instructions"]
+
+    while True:
+        user_input = get_text_input(": ").lower()
+
+        # Get the tokens
+        tokens = user_input.split()
+
+        # Remove the word "to" (for things like "talk to" or "go to")
+        try:
+            tokens.remove("to")
+        except ValueError:
+            pass
+
+        # Now we can tell what to do
+        action = tokens[0]
+        if len(tokens) > 1:
+            subject = " ".join(tokens[1:])
+        if action in travel_words:
+            if subject in direction_words:
+                # Handle traveling
+                new_room_id = current_room.__dict__[subject]
+                new_room = current_map.rooms[new_room_id]
+
+                # Run all plugins associated with traveling to a new room
+                block_default = False
+                for trigger in TravelToRoomTrigger.__subclasses__():
+                    trigger_instance = trigger()
+                    # Check if the plugin blocks the default
+                    if trigger_instance.__class__.__name__ != "Default" and trigger_instance.travel_to_room(player, new_room):
+                        block_default = True
+                
+                # Move to the new room as the default action
+                if not block_default:
+                    default = Default()
+                    default.travel_to_room(player, new_room)
+                break
+                
+        elif action in talk_words:
+            pass
+        elif action in attack_words:
+            pass
+        elif action in examine_words:
+            pass
+        elif action in help_words:
+            pass
+        print()
+        print("Nothing interesting happens")
+        print()
 
 
 def print_adjacent_rooms(current_map: Map, current_room: Room):
     """Prints out the names of all the rooms linked to this one
     current_map: The map the player is currently located in
     current_room: The room the plyaer is currently located in"""
-    if current_room.n != -1:
-        next_room = current_map.rooms[current_room.n]
-        print("To the north you see", next_room.name)
-    if current_room.ne != -1:
-        next_room = current_map.rooms[current_room.ne]
-        print("To the northeast you see", next_room.name)
-    if current_room.e != -1:
-        next_room = current_map.rooms[current_room.e]
-        print("To the east you see", next_room.name)
-    if current_room.se != -1:
-        next_room = current_map.rooms[current_room.se]
-        print("To the southeast you see", next_room.name)
-    if current_room.s != -1:
-        next_room = current_map.rooms[current_room.s]
-        print("To the south you see", next_room.name)
-    if current_room.sw != -1:
-        next_room = current_map.rooms[current_room.sw]
-        print("To the southwest you see", next_room.name)
-    if current_room.w != -1:
-        next_room = current_map.rooms[current_room.w]
-        print("To the west you see", next_room.name)
-    if current_room.nw != -1:
-        next_room = current_map.rooms[current_room.nw]
-        print("To the northwest you see", next_room.name)
+    for direction in direction_words[:-2]:
+        new_room_id = current_room.__dict__[direction]
+        if new_room_id != -1:
+            new_room = current_map.rooms[new_room_id]
+            print("To the", direction, "you see", new_room.name)
 
 
 def get_text_input(prompt: str = "Your answer: ", allowed_responses: list[str] = None,
