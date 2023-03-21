@@ -7,10 +7,13 @@ class GameWindow:
     def __init__(self):
         """Create the main game window"""
         self.root = None
+        self.text_frame = None
         self.text_box = None
+        self.entry_frame = None
+        self.entry_box = None
 
-        self.window_x = 1280
-        self.window_y = 720
+        self.window_x = 600
+        self.window_y = 450
 
         self.__configure_window()
 
@@ -19,9 +22,20 @@ class GameWindow:
         self.root = Tk()
         self.root.title("Epic Quest: Text Quest")
         self.root.configure(bg="#000")
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
 
-        self.text_box = Text(self.root, bg="#000", fg="#FFF", font="Consolas 18")
-        self.text_box.pack(fill="both")
+        self.text_frame = Frame(self.root)
+        self.text_frame.grid(column=0, row=0, sticky="NSEW")
+
+        self.text_box = Text(self.text_frame, bg="#000", fg="#FFF", font="Consolas 18")
+        self.text_box.pack(fill="both", expand=True)
+
+        self.entry_frame = Frame(self.root)
+        self.entry_frame.grid(column=0, row=1, sticky="NSEW")
+
+        self.entry_box = Entry(self.entry_frame, bg="#000", fg="#FFF", font="Consolas 18")
+        self.entry_box.pack(fill="both", expand=True)
 
         self.root.geometry(f"{self.window_x}x{self.window_y}")
 
