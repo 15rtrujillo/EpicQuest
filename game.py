@@ -3,6 +3,7 @@ from entity.player import Player
 from logger.log_manager import LogManager
 from map import Map
 from plugins.default import Default
+from plugins.triggers.talk_to_npc_trigger import TalkToNpcTrigger
 from plugins.triggers.travel_to_room_trigger import TravelToRoomTrigger
 from room import Room
 from world import World
@@ -166,7 +167,7 @@ def main():
         current_npc_ids = current_room.npcs
         current_npcs = list()
 
-        if current_item_ids is not None:
+        if current_npc_ids is not None:
             for npc_id in current_npc_ids:
                 current_npcs.append(World.npcs[npc_id])
 
@@ -209,7 +210,8 @@ def process_input(player: Player, current_map: map, current_room: Room,
     examine_words = ["look", "examine", "study"]
     help_words = ["help", "instructions"]
 
-    while True:
+    performed_action = False
+    while not performed_action:
         user_input = get_text_input(": ").lower()
 
         # Get the tokens
@@ -230,32 +232,55 @@ def process_input(player: Player, current_map: map, current_room: Room,
                 # Handle traveling
                 new_room_id = current_room.__dict__[subject]
                 new_room = current_map.rooms[new_room_id]
-
-                # Run all plugins associated with traveling to a new room
-                block_default = False
-                for trigger in TravelToRoomTrigger.__subclasses__():
-                    trigger_instance = trigger()
-                    # Check if the plugin blocks the default
-                    if trigger_instance.__class__.__name__ != "Default" and trigger_instance.travel_to_room(player, new_room):
-                        block_default = True
-                
-                # Move to the new room as the default action
-                if not block_default:
-                    default = Default()
-                    default.travel_to_room(player, new_room)
-                break
+                run_plugins(player, TravelToRoomTrigger, new_room)
+                performed_action = True
                 
         elif action in talk_words:
-            pass
+            for npc in current_npcs:
+                if subject in npc.name:
+                    run_plugins(player, TalkToNpcTrigger, npc)
+                    performed_action = True
+
         elif action in attack_words:
             pass
         elif action in examine_words:
-            pass
+            for npc in current_npcs:
+                if subject in npc.name:
+                    print()
+                    print(npc.desc)
+                    print()
+            # TODO Check items
+
+            # We don't want to say "Nothing interesting happens" if they examine something
+            performed_action = True
         elif action in help_words:
             pass
-        print()
-        print("Nothing interesting happens")
-        print()
+
+
+def run_plugins(player: Player, trigger_type, data):
+    """Run all plugins related to a specific action
+    player: The player object
+    data: The data being interacted with, like an NPC, room, item, etc.
+    trigger_type: The type of trigger that we are calling"""
+    block_default = False
+
+    # This is hacky but it should work because each trigger type should only have 1 non-dunder method in it.
+    trigger_method_name = [f for f in dir(trigger_type) if not f.startswith("__") and not f.startswith("_")][0]
+
+    # Loop through each inheritor of this trigger type
+    for trigger in trigger_type.__subclasses__():
+        # Since the trigger methods are non-static, we need to create an instance for them. Maybe this should be changed?
+        trigger_instance = trigger()
+
+        # Check if the plugin blocks the default
+        # More black magic to call the method lol
+        if trigger_instance.__class__.__name__ != "Default" and getattr(trigger_instance, trigger_method_name)(player, data):
+            block_default = True
+    
+    # Move to the new room as the default action
+    if not block_default:
+        default = Default()
+        getattr(default, trigger_method_name)(player, data)
 
 
 def print_adjacent_rooms(current_map: Map, current_room: Room):

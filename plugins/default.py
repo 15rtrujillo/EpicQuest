@@ -9,6 +9,7 @@ class Default(TalkToNpcTrigger, TravelToRoomTrigger):
     def talk_to_npc(self, player: Player, npc: Npc) -> bool:
         print()
         print(f"{npc.name.title()} does not appear interested in talking")
+        print()
         return True
     
     def travel_to_room(self, player: Player, room: Room) -> bool:
