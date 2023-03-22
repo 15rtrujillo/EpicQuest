@@ -24,6 +24,7 @@ class GameWindow:
         self.root.configure(bg="#000")
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
+        self.root.bind("<Visibility>", )
 
         self.text_frame = Frame(self.root)
         self.text_frame.grid(column=0, row=0, sticky="NSEW")
@@ -40,8 +41,10 @@ class GameWindow:
 
         self.root.geometry(f"{self.window_x}x{self.window_y}")
 
-    def __parse_text(self, event):
-        self.typewriter("Hello there, I hope you are doing well today.")
+    def parse_text(self, event):
+        """This function will handle parsing the text of the game
+        event: Unused"""
+        pass
 
     def show_window(self):
         """Display the window and start event listeners"""
