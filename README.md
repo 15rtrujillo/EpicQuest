@@ -1,3 +1,7 @@
+2023/03/23
+I'm probably REALLY going to regret this (hence the last commit name), but I think it would be kinda fun to see if I can get this working with either the console or the GUI window. This might have to be dropped eventually, because with the way I'm thinking about doing combat, it might not be possible unless I have full control over the cursor/insertion point, which I don't think you have with most terminals/consoles.
+Either way, I think it will be a fun challenge for the time being.
+
 2023/03/16
 I've started to rethink having quests in custom files. I think it would work better as Python scripts, and I can supply functions to make quest writing easier. This is what the stuff in the "plugins" directory is for.
 

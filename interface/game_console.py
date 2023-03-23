@@ -1,12 +1,12 @@
 from entity.npc import Npc
 from entity.player import Player
-from game import Game
+from interface.game import Game
 from map import Map
 from plugins.default import Default
 from plugins.triggers.talk_to_npc_trigger import TalkToNpcTrigger
 from plugins.triggers.travel_to_room_trigger import TravelToRoomTrigger
 from room import Room
-from world import World
+from interface.screen import *
 
 import game_data_loader
 import save_manager
@@ -16,7 +16,30 @@ direction_words = ["north", "northeast", "east", "southeast", "south", "southwes
 
 
 class GameConsole(Game):
-    pass
+    
+    def __init__(self):
+        super().__init__()
+
+    def initialize(self):
+        super().initialize()
+        # The main game loop to mimic the loop of the game window
+        while True:
+            self.parse_text()
+
+    def display_screen(self, screen: Screen):
+        super().display_screen(screen)
+        print(self.screen.text, end="")
+
+    def append_to_screen(self, text: str, end: str = "\n"):
+        super().append_to_screen(text, end)
+        print(text + end, end="")
+
+    def pause(self, screen: Screen):
+        super().pause(screen)
+
+    def parse_text(self):
+        text = input()  
+        super().parse_text(text)
 
 
 def intro(name: str):
@@ -155,7 +178,7 @@ def main():
     print("Epic Quest: Text Quest")
     print()
     print("Loading data...")
-
+    """
     # Load all the definitions into the World
     game_data_loader.load_all()
     print("Data loaded!")
@@ -186,17 +209,18 @@ def main():
             print("You see", npc.name)
         print()
 
-        """
-        Haven't implemented items yet lol
-        for item in current_items:
-            print(f"You notice a {item.name} on the ground")
-        """
+        
+        # Haven't implemented items yet lol
+        # for item in current_items:
+        #    print(f"You notice a {item.name} on the ground")
+        
 
         print_adjacent_rooms(current_map, current_room)
 
         # Process the player input
         process_input(player, current_map, current_room, 
                       current_npcs)
+    """
 
 
 def process_input(player: Player, current_map: map, current_room: Room,

@@ -2,9 +2,17 @@ from abc import ABC
 
 
 class Screen(ABC):
-    """The base class for screens"""
+    """The abstract base class for screens."""
     def __init__(self, text: str = ""):
         self.text = text
+
+
+class InfoScreen(Screen):
+    """A screen that simply displays text. Usually waits until the user presses ENTER to continue"""
+    def __init__(self, text: str = ""):
+        """Create a screen that displays text
+        text: The text to display"""
+        super().__init__(text)
 
 
 class NumberedMenuScreen(Screen):
@@ -14,8 +22,10 @@ class NumberedMenuScreen(Screen):
         """Create a menu that displays a list of numbered options to the user
         text: The text for the menu, not including the options
         options: An array containing the possible options. Do not number the options"""
-        self.options = options
         super().__init__(text)
+        self.options = options
+        for option in self.get_numbered_options():
+            self.text += (option + "\n")
 
     def get_numbered_options(self) -> list[str]:
         """Get the list of options, numbered"""
