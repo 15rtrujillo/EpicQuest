@@ -11,12 +11,16 @@ import save_manager
 
 
 # Reusable screens will be defined here
+new_game_screen = InfoScreen("New Game\nPlease input a name for your character"
+                             " or press ENTER to return to the main menu")
+
+quit_game_screen = InfoScreen("Thank you for playing Epic Quest!\n\nPress ENTER to exit...")
+
 main_menu_screen = NumberedMenuScreen("Epic Quest: Text Quest\n\nMain Menu\n",
                                       ["New Game",
                                        "Load Game",
                                        "About",
                                        "Exit"])
-new_game_screen = InfoScreen("New Game\nPlease input a name for your character or press ENTER to return to the main menu")
 
 
 class Game(ABC):
@@ -66,7 +70,8 @@ class Game(ABC):
         self.pause(main_menu_screen)
 
     def display_screen(self, screen: Screen):
-        """Displays a screen object and sets it as the active screen. The GUI will clear the screen before showing a new one
+        """Displays a screen object and sets it as the active screen.
+        The GUI will clear the screen before showing a new one
         screen: The screen to display"""
         self.screen = screen
 
@@ -88,7 +93,9 @@ class Game(ABC):
         if isinstance(self.screen, InfoScreen):
             # Check for specific info screens
             if self.screen is new_game_screen:
-                self.new_game()
+                self.new_game(text)
+            elif self.screen is quit_game_screen:
+                self.quit_game()
             elif self.next_screen is not None:
                 screen_to_display = self.next_screen
                 self.next_screen = None
@@ -102,16 +109,32 @@ class Game(ABC):
                 return_screen = self.screen
                 self.display_screen(InfoScreen("Please enter a valid option\n"))
                 self.pause(return_screen)
+                return
             
-            # Handle specific menus
+            # Handle specific screens
             if self.screen is main_menu_screen:
                 self.handle_main_menu(choice)
+
+        elif isinstance(self.screen, YesOrNoScreen):
+            # Parse yes or no input
+            if validate_text_input(text, ["yes", "y"]):
+                next_screen = self.screen.yes_screen
+                if next_screen is not None:
+                    self.display_screen(next_screen)
+            elif validate_text_input(text, ["no", "n"]):
+                next_screen = self.screen.no_screen
+                if next_screen is not None:
+                    self.display_screen(next_screen)
+            else:
+                return_screen = self.screen
+                self.display_screen(InfoScreen("Please answer either \"yes\" or \"no\"\n"))
+                self.pause(return_screen)
 
     def handle_main_menu(self, choice: int):
         """Handle inputs for the main menu screen
         choice: The choice the user selected"""
         if choice == 1:
-            self.display_screen(new_game_screen)  
+            self.display_screen(new_game_screen)
         elif choice == 2:
             # Load Game
             pass
@@ -122,12 +145,34 @@ The IP of Epic Quest and all things associated with it is Copyright (C) Ryan Tru
 I love you"""))
             self.pause(main_menu_screen)
         elif choice == 4:
-            # Quit
-            pass
+            self.display_screen(YesOrNoScreen("Are you sure you want to quit?\n", quit_game_screen, main_menu_screen))
 
-    def new_game(self):
-        """Create a new player save"""  
-        pass
+    def new_game(self, player_name: str):
+        """Create a new player save
+        player_name: The name entered by the player"""
+        saves = save_manager.get_saves()
+
+        if player_name == "":
+            self.display_screen(main_menu_screen)
+            return
+
+        # Check if the name is already in use
+        if player_name in [s.lower() for s in saves]:
+            self.display_screen(InfoScreen(f"A character with the name {player_name} already exists"))
+            self.pause(new_game_screen)
+            return
+
+        # Name good
+        self.player = Player(player_name)
+        save_manager.save(self.player)
+
+        # TODO: Start the intro
+
+    def quit_game(self):
+        """Saves the player and quits the game"""
+        if self.player is not None:
+            save_manager.save(self.player)
+        exit(0)
 
     def add_map(self, map: Map):
         """Add a map to the world map
@@ -162,3 +207,25 @@ def parse_int_input(text_to_parse: str, number_of_choices: int = 0) -> int:
             return -1
     except ValueError:
         return -1
+
+
+def validate_text_input(text_to_validate: str, allowed_responses: list[str] = None,
+                        case_sensitive: bool = False) -> bool:
+    """Validates text input
+    text_to_validate: The text to validate
+    allowed_responses: If this is not None, the user's input will be checked against a list of
+    allowed responses. If the user enters an invalid response, they will be prompted to try again
+    case_sensitive: All string comparisons will be case-sensitive if this is set"""
+    # If we don't care about validating the response
+    if allowed_responses is None:
+        return True
+
+    # If we want to be case-sensitive
+    if case_sensitive:
+        if text_to_validate in allowed_responses:
+            return True
+    else:
+        if text_to_validate in [allowed_response.lower() for allowed_response in allowed_responses]:
+            return True
+
+    return False

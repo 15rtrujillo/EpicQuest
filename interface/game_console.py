@@ -8,7 +8,6 @@ from plugins.triggers.travel_to_room_trigger import TravelToRoomTrigger
 from room import Room
 from interface.screen import *
 
-import game_data_loader
 import save_manager
 
 
@@ -24,7 +23,7 @@ class GameConsole(Game):
         super().initialize()
         # The main game loop to mimic the loop of the game window
         while True:
-            self.parse_text()
+            self.get_text()
 
     def display_screen(self, screen: Screen):
         super().display_screen(screen)
@@ -37,7 +36,7 @@ class GameConsole(Game):
     def pause(self, screen: Screen):
         super().pause(screen)
 
-    def parse_text(self):
+    def get_text(self):
         text = input()  
         super().parse_text(text)
 
