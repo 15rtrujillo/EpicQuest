@@ -52,7 +52,7 @@ def save(player: Player):
         save_file.write(save_data)
 
 
-def load(name: str) -> Player:
+def load(name: str) -> Player | None:
     """Load a player from a binary file
     name: The name of the player to attempt to load"""
     save_file_name = file_utils.get_file_path(f"saves/{name}.eq")

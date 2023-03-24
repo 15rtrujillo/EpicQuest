@@ -8,7 +8,7 @@ import json
 import file_utils
 
 
-def load_map_file(map_file_name: str) -> Map:
+def load_map_file(map_file_name: str) -> Map | None:
     """Load a map file and return a new Map object containing all the loaded Rooms.
     map_file_name: The name of the map file to load"""
 
@@ -55,7 +55,7 @@ def load_map_file(map_file_name: str) -> Map:
     return new_map
 
 
-def load_npc_file(npc_file_name: str) -> list[Npc]:
+def load_npc_file(npc_file_name: str) -> list[Npc] | None:
     """Load a NPC file and return a list of loaded NPCs.
     npc_file_name: The name of the map file to load"""
     # Get the absolute path for the map file
