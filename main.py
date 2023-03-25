@@ -2,7 +2,7 @@ from interface.game_console import GameConsole
 from interface.game_window import GameWindow
 
 
-WINDOWED = False
+WINDOWED = True
 
 
 def main():

@@ -4,7 +4,7 @@ from datetime import datetime
 class Logger:
     """Handles logging to a file"""
 
-    DEBUG = False
+    DEBUG = True
 
     def __init__(self, file_name: str):
         """Create a Logger
