@@ -21,7 +21,7 @@ class GameWindow(Game):
         self.text_frame = tk.Frame(self.root)
         self.text_frame.grid(column=0, row=0, sticky="NSEW")
 
-        self.text_box = tk.Text(self.text_frame, bg="#000", fg="#FFF", font="Consolas 20")
+        self.text_box = tk.Text(self.text_frame, bg="#000", fg="#FFF", font="Consolas 20", wrap="word")
         self.text_box.bind("<Key>", lambda event: "break")
         self.text_box.pack(fill="both", expand=True)
 

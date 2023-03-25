@@ -1,9 +1,13 @@
 from abc import ABC
 from entity.npc import Npc
 from entity.player import Player
-from interface.screen import *
+from interface.screen import Screen, InfoScreen, NumberedMenuScreen, UnnumberedMenuScreen, YesOrNoScreen, RoomScreen
 from logger.log_manager import LogManager
 from map import Map
+from plugins.default import Default
+from plugins.plugin_manager import PluginManager
+from plugins.triggers.talk_to_npc_trigger import TalkToNpcTrigger
+from plugins.triggers.travel_to_room_trigger import TravelToRoomTrigger
 from room import Room
 
 import constants.word_lists as word_lists
@@ -16,14 +20,14 @@ class Game(ABC):
     """An abstract class that has methods for running the game"""
 
     def __init__(self):
-        self.screen: Screen = None
-        self.player: Player = None
+        self.screen: Screen | None = None
+        self.player: Player | None = None
         self.world_map: dict[int, Map] = dict()
         # self.item_defs: dict[int, Item] = dict()
         self.npc_defs: dict[int, Npc] = dict()
-        self.current_map: Map = None
-        self.current_room: Room = None
-        self.current_npcs: list[Npc] = None
+        self.current_map: Map | None = None
+        self.current_room: Room | None = None
+        self.current_npcs: list[Npc] | None = None
         # self.current_items: list[Item] = None
 
     def initialize(self):
@@ -138,6 +142,8 @@ class Game(ABC):
                 self.pause()
 
         elif isinstance(self.screen, RoomScreen):
+            if text == "":
+                return
             # Get the tokens
             tokens = text.split()
 
@@ -160,8 +166,11 @@ class Game(ABC):
                 if subject is not None and validate_text_input(subject, word_lists.DIRECTIONS):
                     # Handle traveling
                     new_room_id = self.current_room.__dict__[subject]
-                    new_room = self.current_map.rooms[new_room_id]
-                    self.run_plugins(TravelToRoomTrigger, new_room)
+                    # Make sure that we can actually go the way they want to
+                    if new_room_id != -1:
+                        new_room = self.current_map.rooms[new_room_id]
+                        self.run_plugins(TravelToRoomTrigger, new_room)
+                        return
 
             self.display_screen(InfoScreen("Nothing interesting happens...\n", self.screen))
             self.pause()
@@ -233,7 +242,7 @@ Press ENTER to continue...
         save_manager.save(self.player)
 
         # TODO: Start the intro
-        self.display_screen(self.create_game_screen())
+        self.display_screen(self.create_room_screen())
 
     def load_game(self, player_name: str):
         # Attempt to load the player
@@ -245,7 +254,7 @@ Press ENTER to continue...
             self.pause()
 
         self.player = player
-        self.display_screen(self.create_game_screen())
+        self.display_screen(self.create_room_screen())
 
     def quit_game(self, _: str):
         """Saves the player and quits the game"""
@@ -253,7 +262,7 @@ Press ENTER to continue...
             save_manager.save(self.player)
         exit(0)
 
-    def create_game_screen(self) -> RoomScreen:
+    def create_room_screen(self) -> RoomScreen:
         """Creates the screen for the current room"""
         current_map_id = self.player.map
         current_room_id = self.player.room
@@ -281,6 +290,15 @@ Press ENTER to continue...
         # This is hacky, but it should work because each trigger type should only have 1 non-dunder method in it.
         trigger_method_name = [f for f in dir(trigger_type) if not f.startswith("__") and not f.startswith("_")][0]
 
+        # Set up the script context
+        script_context = PluginManager.get_script_context()
+        script_context.game = self
+        script_context.interacting_player = self.player
+        if trigger_type == TalkToNpcTrigger:
+            script_context.interacting_npc = data
+        elif trigger_type == TravelToRoomTrigger:
+            script_context.interacting_room = data
+
         # Loop through each inheritor of this trigger type
         for trigger in trigger_type.__subclasses__():
             # Since the trigger methods are non-static, we need to create an instance for them.
@@ -289,14 +307,15 @@ Press ENTER to continue...
 
             # Check if the plugin blocks the default
             # More black magic to call the method lol
-            if trigger_instance.__class__.__name__ != "Default" and getattr(trigger_instance, trigger_method_name)(
-                    self.player, data):
+            if trigger_instance.__class__.__name__ != "Default" and getattr(trigger_instance, trigger_method_name)():
                 block_default = True
 
         # Move to the new room as the default action
         if not block_default:
             default = Default()
-            getattr(default, trigger_method_name)(self.player, data)
+            getattr(default, trigger_method_name)()
+
+        script_context.clear_context()
 
     def add_map(self, new_map: Map):
         """Add a map to the world map
