@@ -33,9 +33,6 @@ class GameConsole(Game):
         super().append_to_screen(text, end)
         print(text + end, end="")
 
-    def pause(self, screen: Screen):
-        super().pause(screen)
-
     def get_text(self):
         text = input()  
         super().parse_text(text)
@@ -45,42 +42,6 @@ def intro(name: str):
     """Play the intro text
     name: The player's name"""
     pass
-
-
-def new_game() -> Player:
-    """Create a new player.
-    Returns True if a player was created successfully"""
-    # Get the currently existing saves so the player can't duplicate an existing character
-    saves = save_manager.get_saves()
-
-    print()
-    print("New Game")
-    print()
-    name_good = False
-    player_name = ""
-    while not name_good:
-        player_name = get_text_input("Please enter a name for your character "
-                                     "or press ENTER to return to the main menu\n")
-        
-        if player_name == "":
-            return None
-        
-        # Check if the player name already exists
-        name_good = True
-        for save in saves:
-            if player_name.lower() == save.lower():
-                print()
-                print("A character with that name already exists!")
-                print()
-                name_good = False
-                break
-    
-    # Create the new player
-    player = Player(player_name)
-    save_manager.save(player)
-
-    # TODO: Call the story intro here
-    return player
 
 
 def load_game() -> Player:
@@ -121,56 +82,6 @@ def load_game() -> Player:
         print()
         pause()
         return None
-
-
-def about():
-    """Displays the about section"""
-    print()
-    print("Epic Quest: Text Quest")
-    print("The code is open source and pending licensing")
-    print("The IP of Epic Quest and all things associated with it is Copyright (C) Ryan Trujillo")
-    print("I love you")
-    print()
-    pause()
-
-
-def exit_game(player: Player):
-    """Quit the game and save the player
-    player: The player to save"""
-    if player is not None:
-        save_manager.save(player)
-    print()
-    print("Thank you for playing Epic Quest.")
-    print("Goodbye!")
-    exit(0)
-
-
-def main_menu() -> Player:
-    """Display the main menu for the game and create/load a player"""
-    while True:
-        print()
-        print("Epic Quest: Text Quest")
-        print()
-        print("Main Menu")
-        print("1. New Game")
-        print("2. Load Game")
-        print("3. About")
-        print("4. Exit")
-        print()
-        choice = get_int_input(number_of_choices=4)
-        if choice == 1:
-            player = new_game()
-            if player is not None:
-                break
-        elif choice == 2:
-            player = load_game()
-            if player is not None:
-                break
-        elif choice == 3:
-            about()
-        elif choice == 4:
-            exit_game(None)
-    return player
 
 
 def main():
