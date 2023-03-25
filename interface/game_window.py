@@ -59,6 +59,7 @@ class GameWindow(Game):
     def load_data(self):
         """This method is specific to the GUI and is used to call the initialize method
         on the superclass, because we want to wait until after the mainloop starts to do so"""
+        self.root.unbind("<Visibility>")
         super().initialize()
 
     def clear_text(self):

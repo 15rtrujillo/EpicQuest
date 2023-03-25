@@ -1,5 +1,10 @@
 from abc import ABC
+from entity.npc import Npc
+from map import Map
+from room import Room
 from typing import Callable
+
+import constants.word_lists as word_lists
 
 
 class Screen(ABC):
@@ -109,7 +114,7 @@ class UnnumberedMenuScreen(Screen):
         if self.options is None:
             self.options = dict()
         self.options[option] = next_action
-        if self.show_options:
+        if self.show_options and option != "":
             self.text += (option + "\n")
 
 
@@ -177,3 +182,45 @@ class NumberedMenuScreen(Screen):
 
         number = self.get_options_count()
         self.text += f"{number}. {option}\n"
+
+
+class GameScreen(Screen):
+    """Screen that displays information about the current room"""
+
+    def __init__(self, current_map: Map, current_room: Room, current_npcs: list[Npc]):
+        """Create a screen to display the information about the current room
+        current_map: The map the player is currently located in
+        current_room: The room the player is currently located in
+        current_npcs: The NPCs associated with the current Room"""
+        self.current_map = current_map
+        self.current_room = current_room
+        self.current_npcs = current_npcs
+
+        # Create the text for this room
+        text = current_room.desc + "\n"
+
+        # If there are NPCs, list them
+        if len(self.current_npcs) > 0:
+            text += "\n"
+            for npc in self.current_npcs:
+                text += f"You see {npc.name}\n"
+
+        # If there are adjacent rooms, print those
+        adj_rooms = self.get_adjacent_rooms()
+        if len(adj_rooms) > 0:
+            text += "\n"
+            text += adj_rooms
+        text += "\n"
+
+        super().__init__(text)
+
+    def get_adjacent_rooms(self) -> str:
+        """Get a string with all the adjacent rooms"""
+        adj_rooms = ""
+        for direction in word_lists.DIRECTIONS[:-2]:
+            new_room_id = self.current_room.__dict__[direction]
+            if new_room_id != -1:
+                new_room = self.current_map.rooms[new_room_id]
+                adj_rooms += f"To the {direction} you see {new_room.name}\n"
+
+        return adj_rooms

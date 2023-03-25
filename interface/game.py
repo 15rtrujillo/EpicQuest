@@ -4,7 +4,9 @@ from entity.player import Player
 from interface.screen import *
 from logger.log_manager import LogManager
 from map import Map
+from room import Room
 
+import constants.word_lists as word_lists
 import game_data_loader
 import file_utils
 import save_manager
@@ -16,9 +18,13 @@ class Game(ABC):
     def __init__(self):
         self.screen: Screen = None
         self.player: Player = None
-        self.world_map = dict()
-        self.items = dict()
-        self.npcs = dict()
+        self.world_map: dict[int, Map] = dict()
+        # self.items: dict[int, Item] = dict()
+        self.npcs: dict[int, Npc] = dict()
+        self.current_map: Map = None
+        self.current_room: Room = None
+        self.current_npcs: list[Npc] = None
+        # self.current_items: list[Item] = None
 
     def initialize(self):
         """Load the game and set up the interface"""
@@ -123,9 +129,9 @@ class Game(ABC):
                 return
 
         elif isinstance(self.screen, YesOrNoScreen):
-            if validate_text_input(text, ["yes", "y"]) and self.screen.has_yes_screen():
+            if validate_text_input(text, word_lists.YES) and self.screen.has_yes_screen():
                 self.display_screen(self.screen.yes_screen)
-            elif validate_text_input(text, ["no", "n"]) and self.screen.has_no_screen():
+            elif validate_text_input(text, word_lists.NO) and self.screen.has_no_screen():
                 self.display_screen(self.screen.no_screen)
             else:
                 self.display_screen(InfoScreen("Please enter either \"yes\" or \"no\"\n", self.screen))
@@ -140,6 +146,12 @@ class Game(ABC):
                                                {"*": self.new_game,
                                                 "": main_menu_screen}, False)
 
+        load_game_screen = self.create_load_game_screen()
+        if isinstance(load_game_screen, UnnumberedMenuScreen):
+            load_game_screen.add_option("", main_menu_screen)
+        elif isinstance(load_game_screen, InfoScreen):
+            load_game_screen.next_screen = main_menu_screen
+
         about_game_screen = InfoScreen("""About Epic Quest: Text Quest
 The code is open source and pending licensing
 The IP of Epic Quest and all things associated with it is Copyright (C) Ryan Trujillo
@@ -149,7 +161,7 @@ Press ENTER to continue...
 """, main_menu_screen)
 
         main_menu_screen.add_option("New Game", new_game_screen)
-        main_menu_screen.add_option("Load Game", self.create_load_game_screen())
+        main_menu_screen.add_option("Load Game", load_game_screen)
         main_menu_screen.add_option("About", about_game_screen)
         main_menu_screen.add_option("Quit", YesOrNoScreen("Are you sure you want to quit?\n",
                                                           self.create_quit_game_screen(),
@@ -160,11 +172,16 @@ Press ENTER to continue...
     def create_load_game_screen(self) -> UnnumberedMenuScreen:
         """Creates the load game screen and fills it with a list of characters"""
         saves = save_manager.get_saves()
-        options_dict = dict()
-        for save in saves:
-            options_dict[save] = self.load_game
-        load_game_screen = UnnumberedMenuScreen("Load Game\nEnter the name of the character you'd like to load\n",
-                                                options_dict)
+        if len(saves) > 0:
+            options_dict = dict()
+            for save in saves:
+                options_dict[save] = self.load_game
+            load_game_screen = UnnumberedMenuScreen("Load Game\nEnter the name of the character you'd like to load "
+                                                    "or press ENTER to return to the main menu\n",
+                                                    options_dict)
+        else:
+            load_game_screen = InfoScreen("Load Game\nThere are no characters to load\n"
+                                          "\nPress ENTER to return to the main menu...\n")
         return load_game_screen
 
     def create_quit_game_screen(self):
@@ -187,9 +204,19 @@ Press ENTER to continue...
         save_manager.save(self.player)
 
         # TODO: Start the intro
+        self.display_screen(self.create_game_screen())
 
     def load_game(self, player_name: str):
-        pass
+        # Attempt to load the player
+        player = save_manager.load(player_name)
+        if player is None:
+            self.display_screen(InfoScreen(f"There was an error loading the character named {player_name}. "
+                                           f"Check the log file for more details.",
+                                           self.create_main_menu_screen()))
+            self.pause()
+
+        self.player = player
+        self.display_screen(self.create_game_screen())
 
     def quit_game(self, _: str):
         """Saves the player and quits the game"""
@@ -197,23 +224,42 @@ Press ENTER to continue...
             save_manager.save(self.player)
         exit(0)
 
-    def add_map(self, map: Map):
+    def create_game_screen(self) -> GameScreen:
+        """Creates the screen for the current room"""
+        current_map_id = self.player.map
+        current_room_id = self.player.room
+        self.current_map = self.world_map[current_map_id]
+        self.current_room = self.current_map.rooms[current_room_id]
+
+        # Get NPCs
+        current_npc_ids = self.current_room.npcs
+        current_npcs = list()
+
+        if current_npc_ids is not None:
+            for npc_id in current_npc_ids:
+                current_npcs.append(self.npcs[npc_id])
+
+        self.current_npcs = current_npcs
+
+        return GameScreen(self.current_map, self.current_room, self.current_npcs)
+
+    def add_map(self, new_map: Map):
         """Add a map to the world map
-        map: The map to add"""
-        if map.id in self.world_map.keys():
-            LogManager.get_logger().warn(f"Attempted to add Map with ID {map.id} to world map, but a "
+        new_map: The map to add"""
+        if new_map.id in self.world_map.keys():
+            LogManager.get_logger().warn(f"Attempted to add Map with ID {new_map.id} to world map, but a "
                                          f"Map with the same ID already exists. New Map was not added.")
             return
-        self.world_map[map.id] = map
+        self.world_map[new_map.id] = new_map
 
-    def add_npc(self, npc: Npc):
+    def add_npc(self, new_npc: Npc):
         """Add an NPC to the NPC definitions dictionary
-        npc: The NPC to add"""
-        if npc.id in self.npcs.keys():
-            LogManager.get_logger().warn(f"Attempted to add NPC with ID {npc.id} to NPC defs list, "
+        new_npc: The NPC to add"""
+        if new_npc.id in self.npcs.keys():
+            LogManager.get_logger().warn(f"Attempted to add NPC with ID {new_npc.id} to NPC defs list, "
                                          f"but an NPC with the same ID already exists. New NPC was not added.")
             return
-        self.npcs[npc.id] = npc
+        self.npcs[new_npc.id] = new_npc
 
 
 def parse_int_input(text_to_parse: str, number_of_choices: int = 0) -> int:

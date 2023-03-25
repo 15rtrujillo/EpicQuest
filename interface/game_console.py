@@ -11,9 +11,6 @@ from interface.screen import *
 import save_manager
 
 
-direction_words = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest", "up", "down"]
-
-
 class GameConsole(Game):
     
     def __init__(self):
@@ -219,17 +216,6 @@ def run_plugins(player: Player, trigger_type, data):
     if not block_default:
         default = Default()
         getattr(default, trigger_method_name)(player, data)
-
-
-def print_adjacent_rooms(current_map: Map, current_room: Room):
-    """Prints out the names of all the rooms linked to this one
-    current_map: The map the player is currently located in
-    current_room: The room the plyaer is currently located in"""
-    for direction in direction_words[:-2]:
-        new_room_id = current_room.__dict__[direction]
-        if new_room_id != -1:
-            new_room = current_map.rooms[new_room_id]
-            print("To the", direction, "you see", new_room.name)
 
 
 def get_text_input(prompt: str = "Your answer: ", allowed_responses: list[str] = None,
