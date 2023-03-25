@@ -184,7 +184,7 @@ class NumberedMenuScreen(Screen):
         self.text += f"{number}. {option}\n"
 
 
-class GameScreen(Screen):
+class RoomScreen(Screen):
     """Screen that displays information about the current room"""
 
     def __init__(self, current_map: Map, current_room: Room, current_npcs: list[Npc]):

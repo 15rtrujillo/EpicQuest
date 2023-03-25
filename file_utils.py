@@ -39,3 +39,4 @@ def create_saves_directory():
 if __name__ == "__main__":
     print(get_maps_directory())
     print(get_saves_directory())
+    print(get_npcs_directory())

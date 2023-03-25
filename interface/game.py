@@ -19,8 +19,8 @@ class Game(ABC):
         self.screen: Screen = None
         self.player: Player = None
         self.world_map: dict[int, Map] = dict()
-        # self.items: dict[int, Item] = dict()
-        self.npcs: dict[int, Npc] = dict()
+        # self.item_defs: dict[int, Item] = dict()
+        self.npc_defs: dict[int, Npc] = dict()
         self.current_map: Map = None
         self.current_room: Room = None
         self.current_npcs: list[Npc] = None
@@ -137,6 +137,35 @@ class Game(ABC):
                 self.display_screen(InfoScreen("Please enter either \"yes\" or \"no\"\n", self.screen))
                 self.pause()
 
+        elif isinstance(self.screen, RoomScreen):
+            # Get the tokens
+            tokens = text.split()
+
+            # Remove the word "to" (for things like "talk to" or "go to")
+            try:
+                tokens.remove("to")
+            except ValueError:
+                pass
+
+            # The first token should be an action word
+            action = tokens[0]
+
+            # The rest of the tokens should be the subject we're acting on
+            subject = None
+            if len(tokens) > 1:
+                subject = " ".join(tokens[1:])
+
+            # Handle travelling
+            if validate_text_input(action, word_lists.TRAVEL):
+                if subject is not None and validate_text_input(subject, word_lists.DIRECTIONS):
+                    # Handle traveling
+                    new_room_id = self.current_room.__dict__[subject]
+                    new_room = self.current_map.rooms[new_room_id]
+                    self.run_plugins(TravelToRoomTrigger, new_room)
+
+            self.display_screen(InfoScreen("Nothing interesting happens...\n", self.screen))
+            self.pause()
+
     def create_main_menu_screen(self) -> NumberedMenuScreen:
         """Creates and returns the main menu screen"""
         main_menu_screen = NumberedMenuScreen("Epic Quest: Text Quest\n\nMain Menu\n")
@@ -224,7 +253,7 @@ Press ENTER to continue...
             save_manager.save(self.player)
         exit(0)
 
-    def create_game_screen(self) -> GameScreen:
+    def create_game_screen(self) -> RoomScreen:
         """Creates the screen for the current room"""
         current_map_id = self.player.map
         current_room_id = self.player.room
@@ -237,11 +266,37 @@ Press ENTER to continue...
 
         if current_npc_ids is not None:
             for npc_id in current_npc_ids:
-                current_npcs.append(self.npcs[npc_id])
+                current_npcs.append(self.npc_defs[npc_id])
 
         self.current_npcs = current_npcs
 
-        return GameScreen(self.current_map, self.current_room, self.current_npcs)
+        return RoomScreen(self.current_map, self.current_room, self.current_npcs)
+
+    def run_plugins(self, trigger_type, data):
+        """Run all plugins related to a specific action
+        data: The data being interacted with, like an NPC, room, item, etc.
+        trigger_type: The type of trigger that we are calling"""
+        block_default = False
+
+        # This is hacky, but it should work because each trigger type should only have 1 non-dunder method in it.
+        trigger_method_name = [f for f in dir(trigger_type) if not f.startswith("__") and not f.startswith("_")][0]
+
+        # Loop through each inheritor of this trigger type
+        for trigger in trigger_type.__subclasses__():
+            # Since the trigger methods are non-static, we need to create an instance for them.
+            # Maybe this should be changed?
+            trigger_instance = trigger()
+
+            # Check if the plugin blocks the default
+            # More black magic to call the method lol
+            if trigger_instance.__class__.__name__ != "Default" and getattr(trigger_instance, trigger_method_name)(
+                    self.player, data):
+                block_default = True
+
+        # Move to the new room as the default action
+        if not block_default:
+            default = Default()
+            getattr(default, trigger_method_name)(self.player, data)
 
     def add_map(self, new_map: Map):
         """Add a map to the world map
@@ -255,11 +310,11 @@ Press ENTER to continue...
     def add_npc(self, new_npc: Npc):
         """Add an NPC to the NPC definitions dictionary
         new_npc: The NPC to add"""
-        if new_npc.id in self.npcs.keys():
+        if new_npc.id in self.npc_defs.keys():
             LogManager.get_logger().warn(f"Attempted to add NPC with ID {new_npc.id} to NPC defs list, "
                                          f"but an NPC with the same ID already exists. New NPC was not added.")
             return
-        self.npcs[new_npc.id] = new_npc
+        self.npc_defs[new_npc.id] = new_npc
 
 
 def parse_int_input(text_to_parse: str, number_of_choices: int = 0) -> int:
