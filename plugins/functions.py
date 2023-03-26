@@ -1,4 +1,41 @@
+import entity.npc as npc
 from plugins.plugin_manager import PluginManager
+from time import sleep
+
+
+def mes(*text: str):
+    """Adds text to the current screen
+    text: The message to be added"""
+    for line in text:
+        PluginManager.get_script_context().game.append_to_screen(line)
+
+
+def pause():
+    """Print the text \"Press ENTER to continue...\" to the screen"""
+    PluginManager.get_script_context().game.pause()
+
+
+def delay(seconds: float):
+    """Causes the plugin to delay execution
+    seconds: The time to delay the plugin"""
+    sleep(seconds)
+
+
+def npc_say(*text: str, delay_ms: int = 50, end: str = "\n"):
+    """Adds NPC dialog to the screen
+    text: The dialog for the NPC
+    delay_ms: For GUI interface, the time between each character getting added to the screen
+    end: The character to append to the end of the NPC's dialog"""
+    prev_delay = None
+    for line in text:
+        PluginManager.get_script_context().game.typewriter(line, delay_ms, end, prev_delay)
+        prev_delay = len(line) * delay_ms
+
+
+def clear():
+    """Clears the GUI screen
+    Does nothing with the console"""
+    PluginManager.get_script_context().game.clear_text()
 
 
 def set_room(room_id: int):
@@ -21,3 +58,8 @@ def travel():
 
     player.room = room.id
     game.display_screen(game.create_room_screen())
+
+
+def get_npc() -> npc.Npc | None:
+    """Get the NPC object the plugin is interacting with"""
+    return PluginManager.get_script_context().interacting_npc

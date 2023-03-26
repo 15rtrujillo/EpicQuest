@@ -1,5 +1,5 @@
-from interface.screen import *
-from interface.game import *
+from interface.game import Game
+from interface.screen import Screen
 
 
 import tkinter as tk
@@ -54,6 +54,25 @@ class GameWindow(Game):
         super().append_to_screen(text, end)
         self.text_box.insert('end', text + end)
 
+    def typewriter(self, text: str, char_delay: int = 50, end: str = "\n", prev_delay: int = None):
+        if prev_delay is None:
+            self.typewrite(text, char_delay, end)
+        else:
+            self.root.after(prev_delay, self.typewrite, text, char_delay, end)
+
+    def typewrite(self, text: str, delay: int = 50, end: str = "\n", index: int = 0):
+        self.append_to_screen(text[index], end="")
+        index += 1
+        if index < len(text):
+            self.root.after(delay, self.typewrite, text, delay, end, index)
+        else:
+            # If there's nothing else to typewrite, add the ending character
+            self.append_to_screen(end, "")
+
+    def clear_text(self):
+        """Clears the text box"""
+        self.text_box.delete("1.0", "end")
+
     """GUI-specific functions"""
 
     def load_data(self):
@@ -61,20 +80,6 @@ class GameWindow(Game):
         on the superclass, because we want to wait until after the mainloop starts to do so"""
         self.root.unbind("<Visibility>")
         super().initialize()
-
-    def clear_text(self):
-        """Clears the text box"""
-        self.text_box.delete("1.0", "end")
-
-    def typewriter(self, text: str, delay: int = 50, index = 0):
-        """Add text to the textbox with a typewriter effect
-        text: The text to add
-        delay: The delay between each character in ms
-        index: Used in recursion, do not set"""
-        self.append_to_screen(text[index], end="")
-        index += 1
-        if index < len(text):
-            self.root.after(delay, lambda: self.typewriter(text, delay, index))
 
     def get_text(self):
         """Called when the user presses enter on the text entry box"""

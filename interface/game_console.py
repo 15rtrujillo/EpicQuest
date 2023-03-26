@@ -22,6 +22,11 @@ class GameConsole(Game):
         super().append_to_screen(text, end)
         print(text + end, end="")
 
+    def typewriter(self, text: str, char_delay: int = 50, end: str = "\n", prev_delay: int = None):
+        """Typewriting usually doesn't work on most consoles.
+        We just pass along to append_to_screen"""
+        self.append_to_screen(text, end)
+
     def get_text(self):
         text = input()  
         super().parse_text(text)

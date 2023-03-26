@@ -13,6 +13,7 @@ from room import Room
 import constants.word_lists as word_lists
 import game_data_loader
 import file_utils
+import plugins.tutorial.MysteriousFigure
 import save_manager
 
 
@@ -78,6 +79,19 @@ class Game(ABC):
         end: This string will be added to the end of text"""
         self.screen.text += (text + end)
 
+    def typewriter(self, text: str, char_delay: int = 50, end: str = "\n", prev_delay: int = None):
+        """Add text to the textbox with a typewriter effect
+        text: The text to add
+        char_delay: The delay between each character in ms
+        end: The character to append to the very end of the typewritten text
+        prev_delay: The time the previous call to typewriter will take to complete"""
+        pass
+
+    def clear_text(self):
+        """Clears all the text on the GUI screen
+        Does nothing with the console"""
+        pass
+
     def pause(self):
         """Waits for the user to press enter to continue to the next screen"""
         self.append_to_screen("\nPress ENTER to continue...\n")
@@ -88,8 +102,11 @@ class Game(ABC):
         if isinstance(self.screen, InfoScreen):
             if self.screen.has_next_screen():
                 self.display_screen(self.screen.next_screen)
+
             elif self.screen.has_next_function():
                 self.screen.next_function(text)
+
+            # TODO: Probably should log an error if we get here
 
         elif isinstance(self.screen, NumberedMenuScreen):
             # Make sure we were given an int
@@ -98,20 +115,25 @@ class Game(ABC):
                 return_screen = self.screen
                 self.display_screen(InfoScreen("Please enter a valid option\n", return_screen))
                 self.pause()
+
             else:
                 func = self.screen.get_next_function(choice)
                 if func is not None:
                     func(text)
                     return
+
                 screen = self.screen.get_next_screen(choice)
                 if screen is not None:
                     self.display_screen(screen)
                     return
-                # TODO: Log an error message if we reach this point
+
+                # There is no next screen or function. Log an error
+                LogManager.get_logger().error(f"A numbered menu screen has no associated screen or "
+                                              f"function for option {choice}")
 
         elif isinstance(self.screen, UnnumberedMenuScreen):
-            # If they didn't enter something from the list
             option = text
+            # If they didn't enter something from the list
             if not validate_text_input(text, self.screen.get_options()):
                 # And if the screen doesn't accept a wildcard
                 if not self.screen.has_wildcard_option():
@@ -120,6 +142,7 @@ class Game(ABC):
                     self.display_screen(InfoScreen("Please enter a valid option\n", return_screen))
                     self.pause()
                     return
+
                 else:
                     option = "*"
 
@@ -127,16 +150,23 @@ class Game(ABC):
             if func is not None:
                 func(text)
                 return
+
             screen = self.screen.get_next_screen(option)
             if screen is not None:
                 self.display_screen(screen)
                 return
 
+            # TODO: Probably should log an error here
+
         elif isinstance(self.screen, YesOrNoScreen):
-            if validate_text_input(text, word_lists.YES) and self.screen.has_yes_screen():
+            if validate_text_input(text, word_lists.YES, partial_match=True)\
+                    and self.screen.has_yes_screen():
                 self.display_screen(self.screen.yes_screen)
-            elif validate_text_input(text, word_lists.NO) and self.screen.has_no_screen():
+
+            elif validate_text_input(text, word_lists.NO, partial_match=True)\
+                    and self.screen.has_no_screen():
                 self.display_screen(self.screen.no_screen)
+
             else:
                 self.display_screen(InfoScreen("Please enter either \"yes\" or \"no\"\n", self.screen))
                 self.pause()
@@ -171,6 +201,16 @@ class Game(ABC):
                         new_room = self.current_map.rooms[new_room_id]
                         self.run_plugins(TravelToRoomTrigger, new_room)
                         return
+
+            elif validate_text_input(action, word_lists.TALK):
+                if subject is not None:
+                    # Check which NPC in the room we're talking to
+                    for npc in self.current_npcs:
+                        if validate_text_input(subject, [npc.name], partial_match=True):
+                            # Handle talking
+                            self.display_screen(InfoScreen(next_screen=self.screen))
+                            self.run_plugins(TalkToNpcTrigger, npc)
+                            return
 
             self.display_screen(InfoScreen("Nothing interesting happens...\n", self.screen))
             self.pause()
@@ -283,8 +323,8 @@ Press ENTER to continue...
 
     def run_plugins(self, trigger_type, data):
         """Run all plugins related to a specific action
-        data: The data being interacted with, like an NPC, room, item, etc.
-        trigger_type: The type of trigger that we are calling"""
+        trigger_type: The type of trigger that we are calling
+        data: The data being interacted with, like an NPC, room, item, etc."""
         block_default = False
 
         # This is hacky, but it should work because each trigger type should only have 1 non-dunder method in it.
@@ -352,23 +392,32 @@ def parse_int_input(text_to_parse: str, number_of_choices: int = 0) -> int:
         return -1
 
 
-def validate_text_input(text_to_validate: str, allowed_responses: list[str] = None,
-                        case_sensitive: bool = False) -> bool:
+def validate_text_input(text_to_validate: str, allowed_responses: list[str],
+                        case_sensitive: bool = False, partial_match: bool = False) -> bool:
     """Validates text input
     text_to_validate: The text to validate
     allowed_responses: If this is not None, the user's input will be checked against a list of
     allowed responses. If the user enters an invalid response, they will be prompted to try again
-    case_sensitive: All string comparisons will be case-sensitive if this is set"""
+    case_sensitive: All string comparisons will be case-sensitive if this is set
+    partial_match: Checks if the text is a substring of one of the allowed responses"""
     # If we don't care about validating the response
+    # But then what is the point of calling this function?
     if allowed_responses is None:
         return True
 
-    # If we want to be case-sensitive
-    if case_sensitive:
-        if text_to_validate in allowed_responses:
-            return True
-    else:
-        if text_to_validate.lower() in [allowed_response.lower() for allowed_response in allowed_responses]:
-            return True
+    for allowed_response in allowed_responses:
+        if case_sensitive:
+            if partial_match and text_to_validate in allowed_response:
+                return True
+
+            elif text_to_validate == allowed_response:
+                return True
+
+        else:
+            if partial_match and text_to_validate.lower() in allowed_response.lower():
+                return True
+
+            elif text_to_validate.lower() == allowed_response.lower():
+                return True
 
     return False
