@@ -79,7 +79,7 @@ class Game(ABC):
         end: This string will be added to the end of text"""
         self.screen.text += (text + end)
 
-    def typewriter(self, text: str, char_delay: int = 50, end: str = "\n", prev_delay: int = None):
+    def typewriter(self, text: str, char_delay: int = 50, end: str = "\n"):
         """Add text to the textbox with a typewriter effect
         text: The text to add
         char_delay: The delay between each character in ms

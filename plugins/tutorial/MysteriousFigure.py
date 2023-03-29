@@ -9,4 +9,5 @@ class MysteriousFigure(TalkToNpcTrigger):
         npc_say("Hello there...",
                 "Welcome to Epic Quest",
                 "This is a test of the dialog system lol")
+        #pause()
         return True

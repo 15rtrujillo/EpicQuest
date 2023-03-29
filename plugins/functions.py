@@ -26,10 +26,8 @@ def npc_say(*text: str, delay_ms: int = 50, end: str = "\n"):
     text: The dialog for the NPC
     delay_ms: For GUI interface, the time between each character getting added to the screen
     end: The character to append to the end of the NPC's dialog"""
-    prev_delay = None
     for line in text:
-        PluginManager.get_script_context().game.typewriter(line, delay_ms, end, prev_delay)
-        prev_delay = len(line) * delay_ms
+        PluginManager.get_script_context().game.typewriter(line, delay_ms, end)
 
 
 def clear():
