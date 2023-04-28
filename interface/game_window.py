@@ -1,8 +1,8 @@
-from collections import deque
 from interface.game import Game
 from interface.screen import Screen
 
 
+import interface.text_manager as tm
 import tkinter as tk
 
 
@@ -38,9 +38,8 @@ class GameWindow(Game):
 
         self.root.geometry(f"{self.window_x}x{self.window_y}")
 
-        self.typewriter_queue: deque[tuple[str, int]] = deque()
-
         # Game stuff
+        self.text_manager = tm.TextManager(self.root, self.text_box)
         super().__init__()
 
     def initialize(self):
@@ -55,35 +54,15 @@ class GameWindow(Game):
 
     def append_to_screen(self, text: str, end: str = "\n"):
         super().append_to_screen(text, end)
-        self.text_box.insert('end', text + end)
+        self.text_manager.add(tm.TextToAdd(text, end))
 
     def typewriter(self, text: str, char_delay: int = 50, end: str = "\n"):
-        if len(self.typewriter_queue) == 0:
-            self.typewriter_queue.append((text, char_delay))
-            self.typewrite(text, char_delay, end)
-        else:
-            self.typewriter_queue.append((text, char_delay))
-            self.root.after(self.get_typewriter_delay(), self.typewrite, text, char_delay, end)
-
-    def typewrite(self, text: str, delay: int = 50, end: str = "\n", index: int = 0):
-        self.append_to_screen(text[index], end="")
-        index += 1
-        if index < len(text):
-            self.root.after(delay, self.typewrite, text, delay, end, index)
-        else:
-            # If there's nothing else to typewrite, add the ending character
-            self.append_to_screen(end, "")
-            self.typewriter_queue.remove((text, delay))
+        super().append_to_screen(text, end)
+        self.text_manager.add(tm.TextToTW(text, char_delay, end))
 
     def clear_text(self):
         """Clears the text box"""
         self.text_box.delete("1.0", "end")
-
-    """def pause(self):
-        if len(self.typewriter_queue) == 0:
-            self.append_to_screen("\nPress ENTER to continue...\n")
-        else:
-            self.root.after(self.get_typewriter_delay(), self.append_to_screen("\nPress ENTER to continue...\n"))"""
 
     """GUI-specific functions"""
 
@@ -98,11 +77,3 @@ class GameWindow(Game):
         text = self.entry_box.get()
         self.entry_box.delete("0", "end")
         super().parse_text(text)
-
-    def get_typewriter_delay(self) -> int:
-        """Returns the delay from the current typewriter queue contents"""
-        delay = 0
-        for to_typewrite in self.typewriter_queue:
-            # Multiply the char delay by the number of characters
-            delay += len(to_typewrite[0]) * to_typewrite[1] + 500
-        return delay
