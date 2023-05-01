@@ -1,6 +1,5 @@
 import entity.npc as npc
 from plugins.plugin_manager import PluginManager
-from time import sleep
 
 
 def mes(*text: str):
@@ -15,13 +14,7 @@ def pause():
     PluginManager.get_script_context().game.pause()
 
 
-def delay(seconds: float):
-    """Causes the plugin to delay execution
-    seconds: The time to delay the plugin"""
-    sleep(seconds)
-
-
-def npc_say(*text: str, delay_ms: int = 50, end: str = "\n"):
+def npc_say(*text: str, delay_ms: int = 25, end: str = "\n"):
     """Adds NPC dialog to the screen
     text: The dialog for the NPC
     delay_ms: For GUI interface, the time between each character getting added to the screen

@@ -56,7 +56,7 @@ class GameWindow(Game):
         super().append_to_screen(text, end)
         self.text_manager.add(tm.TextToAdd(text, end))
 
-    def typewriter(self, text: str, char_delay: int = 50, end: str = "\n"):
+    def typewriter(self, text: str, char_delay: int, end: str):
         super().append_to_screen(text, end)
         self.text_manager.add(tm.TextToTW(text, char_delay, end))
 
@@ -74,6 +74,8 @@ class GameWindow(Game):
 
     def get_text(self):
         """Called when the user presses enter on the text entry box"""
+        if self.text_manager.running:
+            return
         text = self.entry_box.get()
         self.entry_box.delete("0", "end")
         super().parse_text(text)
