@@ -21,7 +21,7 @@ def load_map_file(map_file_name: str) -> Map | None:
     try:
         map_file = open(map_file_path, "r")
     except FileNotFoundError:
-        LogManager.get_logger().error(f"Could not open map file: {map_file_name} - The file does not exist.")
+        LogManager.get_logger().error(f"Could not open map file: {map_file_name} at {map_file_path} - The file does not exist.")
         return None
     
     # Attempt to load the JSON from file
@@ -67,7 +67,7 @@ def load_npc_file(npc_file_name: str) -> list[Npc] | None:
     try:
         npc_file = open(npc_file_path, "r")
     except FileNotFoundError:
-        LogManager.get_logger().error(f"Could not open NPC file: {npc_file_name} - The file does not exist.")
+        LogManager.get_logger().error(f"Could not open NPC file: {npc_file_name} at {npc_file_path} - The file does not exist.")
         return None
     
     # Attempt to load the JSON from file
