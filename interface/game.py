@@ -1,14 +1,14 @@
 from abc import ABC
-from entity.npc import Npc
+from external.npc_def import Npc
 from entity.player import Player
 from interface.screen import Screen, InfoScreen, NumberedMenuScreen, UnnumberedMenuScreen, YesOrNoScreen, RoomScreen
 from logger.log_manager import LogManager
-from map import Map
+from map_def import MapDef
 from plugins.default import Default
 from plugins.plugin_manager import PluginManager
 from plugins.triggers.talk_to_npc_trigger import TalkToNpcTrigger
 from plugins.triggers.travel_to_room_trigger import TravelToRoomTrigger
-from room import Room
+from room_def import RoomDef
 
 import constants.word_lists as word_lists
 import game_data_loader
@@ -23,11 +23,11 @@ class Game(ABC):
     def __init__(self):
         self.screen: Screen | None = None
         self.player: Player | None = None
-        self.world_map: dict[int, Map] = dict()
+        self.world_map: dict[int, MapDef] = dict()
         # self.item_defs: dict[int, Item] = dict()
         self.npc_defs: dict[int, Npc] = dict()
-        self.current_map: Map | None = None
-        self.current_room: Room | None = None
+        self.current_map: MapDef | None = None
+        self.current_room: RoomDef | None = None
         self.current_npcs: list[Npc] | None = None
         # self.current_items: list[Item] = None
 
@@ -356,7 +356,7 @@ Press ENTER to continue...
 
         script_context.clear_context()
 
-    def add_map(self, new_map: Map):
+    def add_map(self, new_map: MapDef):
         """Add a map to the world map
         new_map: The map to add"""
         if new_map.id in self.world_map.keys():

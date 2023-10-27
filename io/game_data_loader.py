@@ -1,14 +1,14 @@
 from logger.log_manager import LogManager
-from map import Map
-from entity.npc import Npc
-from room import Room
+from map_def import MapDef
+from external.npc_def import Npc
+from room_def import RoomDef
 
 
 import json
 import file_utils
 
 
-def load_map_file(map_file_name: str) -> Map | None:
+def load_map_file(map_file_name: str) -> MapDef | None:
     """Load a map file and return a new Map object containing all the loaded Rooms.
     map_file_name: The name of the map file to load"""
 
@@ -32,12 +32,12 @@ def load_map_file(map_file_name: str) -> Map | None:
         return None
     
     # Get the map's ID and name
-    new_map = Map(map_json["id"], map_json["name"])
+    new_map = MapDef(map_json["id"], map_json["name"])
 
     # Get the rooms. This should return a list of Room objects
     rooms = map_json["rooms"]
     for room in rooms:
-        new_room = Room()
+        new_room = RoomDef()
         
         # Loop through the key, value pairs in the room object
         for key, value in room.items():

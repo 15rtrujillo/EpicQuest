@@ -17,6 +17,7 @@ class GameWindow(Game):
         self.root.configure(bg="#000")
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
+        # Initialization event
         self.root.bind("<Visibility>", lambda event: self.load_data())
 
         self.text_frame = tk.Frame(self.root)

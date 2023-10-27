@@ -1,4 +1,4 @@
-class Room:
+class RoomDef:
     """Holds information about a map location"""
 
     def __init__(self, id: int = -1, name: str = "", desc: str = "", n: int = -1, ne: int = -1, e: int = -1,

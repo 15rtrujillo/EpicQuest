@@ -1,4 +1,4 @@
-import entity.npc as npc
+import external.npc_def as npc_def
 from plugins.plugin_manager import PluginManager
 
 
@@ -51,6 +51,6 @@ def travel():
     game.display_screen(game.create_room_screen())
 
 
-def get_npc() -> npc.Npc | None:
+def get_npc() -> npc_def.Npc | None:
     """Get the NPC object the plugin is interacting with"""
     return PluginManager.get_script_context().interacting_npc

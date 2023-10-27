@@ -1,7 +1,7 @@
 from abc import ABC
-from entity.npc import Npc
-from map import Map
-from room import Room
+from external.npc_def import Npc
+from map_def import MapDef
+from room_def import RoomDef
 from typing import Callable
 
 import constants.word_lists as word_lists
@@ -187,7 +187,7 @@ class NumberedMenuScreen(Screen):
 class RoomScreen(Screen):
     """Screen that displays information about the current room"""
 
-    def __init__(self, current_map: Map, current_room: Room, current_npcs: list[Npc]):
+    def __init__(self, current_map: MapDef, current_room: RoomDef, current_npcs: list[Npc]):
         """Create a screen to display the information about the current room
         current_map: The map the player is currently located in
         current_room: The room the player is currently located in

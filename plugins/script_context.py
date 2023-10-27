@@ -1,7 +1,7 @@
-from entity.npc import Npc
+from external.npc_def import Npc
 from entity.player import Player
-from map import Map
-from room import Room
+from map_def import MapDef
+from room_def import RoomDef
 
 import interface.game as game_interface
 
@@ -14,8 +14,8 @@ class ScriptContext:
         self.game: game_interface.Game | None = None
         self.interacting_player: Player | None = None
         self.interacting_npc: Npc | None = None
-        self.interacting_map: Map | None = None
-        self.interacting_room: Room | None = None
+        self.interacting_map: MapDef | None = None
+        self.interacting_room: RoomDef | None = None
         # self.interacting_item: Item | None = None
 
     def clear_context(self):

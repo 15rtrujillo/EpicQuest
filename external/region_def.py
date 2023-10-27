@@ -1,8 +1,8 @@
 from logger.log_manager import LogManager
-from room import Room
+from room_def import RoomDef
 
 
-class Map:
+class RegionDef:
     """Contains information about a map"""
 
     def __init__(self, id: int, name: str):
@@ -11,9 +11,9 @@ class Map:
         name: The name of the map"""
         self.id = id
         self.name = name
-        self.rooms: dict[int, Room] = dict()
+        self.rooms: dict[int, RoomDef] = dict()
 
-    def add_room(self, room: Room):
+    def add_room(self, room: RoomDef):
         """Add a room to this map
         room: The room to add"""
         if room.id in self.rooms.keys():

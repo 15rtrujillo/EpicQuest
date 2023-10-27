@@ -2,7 +2,7 @@ class Npc:
     """Holds information about NPCs"""
 
     def __init__(self):
-        """Create a new NPC"""
+        """Create a new NPC definition"""
         self.id = -1
         self.name = ""
         self.desc = ""
