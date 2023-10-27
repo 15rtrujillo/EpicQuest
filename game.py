@@ -1,5 +1,5 @@
 from abc import ABC
-from external.npc_def import Npc
+from external.npc_def import NpcDef
 from entity.player import Player
 from interface.screen import Screen, InfoScreen, NumberedMenuScreen, UnnumberedMenuScreen, YesOrNoScreen, RoomScreen
 from logger.log_manager import LogManager
@@ -25,10 +25,10 @@ class Game(ABC):
         self.player: Player | None = None
         self.world_map: dict[int, MapDef] = dict()
         # self.item_defs: dict[int, Item] = dict()
-        self.npc_defs: dict[int, Npc] = dict()
+        self.npc_defs: dict[int, NpcDef] = dict()
         self.current_map: MapDef | None = None
         self.current_room: RoomDef | None = None
-        self.current_npcs: list[Npc] | None = None
+        self.current_npcs: list[NpcDef] | None = None
         # self.current_items: list[Item] = None
 
     def initialize(self):
@@ -365,7 +365,7 @@ Press ENTER to continue...
             return
         self.world_map[new_map.id] = new_map
 
-    def add_npc(self, new_npc: Npc):
+    def add_npc(self, new_npc: NpcDef):
         """Add an NPC to the NPC definitions dictionary
         new_npc: The NPC to add"""
         if new_npc.id in self.npc_defs.keys():

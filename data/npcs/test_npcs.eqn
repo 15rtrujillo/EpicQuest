@@ -3,7 +3,7 @@
         "id": -1,
         "name": "",
         "desc": "",
-        "hp": 100,
+        "maxHp": 100,
         "attackable": false
     }
 ]

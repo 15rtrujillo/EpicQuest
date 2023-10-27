@@ -1,4 +1,4 @@
-from external.npc_def import Npc
+from external.npc_def import NpcDef
 from external.region_def import RegionDef
 from external.room_def import RoomDef
 from input_output.logger.log_manager import LogManager
@@ -54,7 +54,7 @@ def load_region_file(region_file_name: str) -> RegionDef | None:
     return new_region
 
 
-def load_npc_file(npc_file_name: str) -> list[Npc] | None:
+def load_npc_file(npc_file_name: str) -> list[NpcDef] | None:
     """Load a NPC file and return a list of loaded NPCs.
     npc_file_name: The name of the map file to load"""
     # Get the absolute path for the NPC file
@@ -79,7 +79,7 @@ def load_npc_file(npc_file_name: str) -> list[Npc] | None:
     # The npc_json should be a list of JSON objects. We will loop through these objects and create NPCs
     npcs = []
     for npc in npc_json:
-        new_npc = Npc()
+        new_npc = NpcDef()
 
         # Loop through the key, value pairs in the Npc JSON object
         for key, value in npc.items():

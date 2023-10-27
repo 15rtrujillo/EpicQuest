@@ -1,3 +1,6 @@
+2023/10/27
+It has been a while since I've worked on this. I think it's time for another rewrite. I think I will get rid of the console and also add in a real game loop.
+
 2023/03/23
 I'm probably REALLY going to regret this (hence the last commit name), but I think it would be kinda fun to see if I can get this working with either the console or the GUI window. This might have to be dropped eventually, because with the way I'm thinking about doing combat, it might not be possible unless I have full control over the cursor/insertion point, which I don't think you have with most terminals/consoles.
 Either way, I think it will be a fun challenge for the time being.

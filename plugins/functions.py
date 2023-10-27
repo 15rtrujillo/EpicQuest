@@ -51,6 +51,6 @@ def travel():
     game.display_screen(game.create_room_screen())
 
 
-def get_npc() -> npc_def.Npc | None:
+def get_npc() -> npc_def.NpcDef | None:
     """Get the NPC object the plugin is interacting with"""
     return PluginManager.get_script_context().interacting_npc

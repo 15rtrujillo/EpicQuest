@@ -1,4 +1,4 @@
-class Npc:
+class NpcDef:
     """Holds information about NPCs"""
 
     def __init__(self):
@@ -6,5 +6,5 @@ class Npc:
         self.id = -1
         self.name = ""
         self.desc = ""
-        self.hp = 100
-
+        self.maxHp = 100
+        self.attackable = False

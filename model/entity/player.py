@@ -9,5 +9,5 @@ class Player:
         self.hp = 100
         self.level = 1
         self.xp = 0
-        self.map = 0
+        self.region = 0
         self.room = 0
