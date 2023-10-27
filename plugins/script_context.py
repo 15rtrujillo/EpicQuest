@@ -3,7 +3,7 @@ from entity.player import Player
 from map_def import MapDef
 from room_def import RoomDef
 
-import interface.game as game_interface
+import game as game_interface
 
 
 class ScriptContext:

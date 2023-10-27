@@ -1,4 +1,4 @@
-from interface.game import Game
+from game import Game
 from interface.screen import Screen
 
 

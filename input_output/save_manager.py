@@ -1,7 +1,8 @@
-from entity.player import Player
-from logger.log_manager import LogManager
+from input_output.logger.log_manager import LogManager
+from model.entity.player import Player
 
-import file_utils
+
+import input_output.file_utils as file_utils
 
 
 def get_bytes(value) -> bytes:
@@ -39,7 +40,7 @@ def get_saves() -> list[str]:
 def save(player: Player):
     """Save a player to a binary file at \"[player_name].eq\"
     player: The player to save"""
-    save_file_name = file_utils.get_file_path(f"saves/{player.name}.eq")
+    save_file_name = file_utils.get_file_path(file_utils.get_saves_directory(), f"{player.name}.eq")
     
     with open(save_file_name, "wb") as save_file:
         save_data = b""
@@ -55,9 +56,9 @@ def save(player: Player):
 def load(name: str) -> Player | None:
     """Load a player from a binary file
     name: The name of the player to attempt to load"""
-    save_file_name = file_utils.get_file_path(f"saves/{name}.eq")
+    save_file_name = file_utils.get_file_path(file_utils.get_saves_directory(), f"{name}.eq")
 
-    loaded_data = dict()
+    loaded_data: dict[str, bytes] = dict()
 
     # Read in everything from the file to populate the dictionary
     try:

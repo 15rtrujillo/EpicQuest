@@ -14,12 +14,12 @@ class Logger:
     def info(self, message: str):
         """Log an information message
         message: The message to be logged"""
-        self.__log(" INFO", message)
+        self.__log("INFO", message)
 
     def warn(self, message: str):
         """Log a warning message
         message: The message to be logged"""
-        self.__log(" WARN", message)
+        self.__log("WARN", message)
 
     def error(self, message: str):
         """Log an error message
