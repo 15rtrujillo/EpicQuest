@@ -20,7 +20,8 @@ def load_region_file(region_file_name: str) -> RegionDef | None:
     try:
         region_file = open(region_file_path, "r")
     except FileNotFoundError:
-        LogManager.get_logger().error(f"Could not open region file: {region_file_name} at {region_file_path} - The file does not exist.")
+        LogManager.get_logger().error(f"Could not open region file: {region_file_name} at {region_file_path}"
+                                      f" - The file does not exist.")
         return None
     
     # Attempt to load the JSON from file
@@ -45,11 +46,11 @@ def load_region_file(region_file_name: str) -> RegionDef | None:
                 new_room.__dict__[key] = value
         
         # Add the new room to the region
-        new_region.add_room(new_room)
+        new_region.add_room_def(new_room)
 
     region_file.close()
 
-    LogManager.get_logger().info(f"Loaded {len(new_region.rooms)} Room definitions from {region_file_name}")
+    LogManager.get_logger().info(f"Loaded {len(new_region.room_defs)} Room definitions from {region_file_name}")
 
     return new_region
 
@@ -66,7 +67,8 @@ def load_npc_file(npc_file_name: str) -> list[NpcDef] | None:
     try:
         npc_file = open(npc_file_path, "r")
     except FileNotFoundError:
-        LogManager.get_logger().error(f"Could not open NPC file: {npc_file_name} at {npc_file_path} - The file does not exist.")
+        LogManager.get_logger().error(f"Could not open NPC file: {npc_file_name} at {npc_file_path}"
+                                      f" - The file does not exist.")
         return None
     
     # Attempt to load the JSON from file

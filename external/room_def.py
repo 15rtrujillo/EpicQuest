@@ -3,7 +3,7 @@ class RoomDef:
 
     def __init__(self, id: int = -1, name: str = "", desc: str = "", n: int = -1, ne: int = -1, e: int = -1,
                  se: int = -1, s: int = -1, sw: int = -1, w: int = -1, nw: int = -1, up: int = -1,
-                 down: int = -1, npcs: list[int] = None, items: list[int] = None):
+                 down: int = -1, npc_ids: list[int] = None, item_ids: list[int] = None):
         """Create a new Room with links to attached rooms
         id: The ID of the room
         name: The name of the room
@@ -33,5 +33,5 @@ class RoomDef:
         self.northwest = nw
         self.up = up
         self.down = down
-        self.npcs = npcs
-        self.items = items
+        self.npc_ids = npc_ids
+        self.item_ids = item_ids

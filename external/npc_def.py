@@ -8,3 +8,5 @@ class NpcDef:
         self.desc = ""
         self.maxHp = 100
         self.attackable = False
+        self.blocking = False
+        self.respawn_ticks = 100
