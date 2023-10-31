@@ -1,8 +1,16 @@
+from model.entity.player import Player
+from model.world.world import World
+
+
+import interface.game_window as game_window
+
+
 class Game:
     """A class that has methods for running the game"""
 
     def __init__(self):
-        pass
+        self.world = World()
+        self.player: Player | None = None
 
 
 def parse_int_input(text_to_parse: str, number_of_choices: int = 0) -> int:

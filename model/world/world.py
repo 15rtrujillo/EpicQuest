@@ -32,6 +32,3 @@ class World:
                 return
             for new_npc_def in npc_def_list:
                 self.npc_defs[new_npc_def.id] = new_npc_def
-
-    def build_map(self):
-        pass

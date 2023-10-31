@@ -1,4 +1,3 @@
-from game import Game
 from interface.screen import Screen
 
 
@@ -6,7 +5,7 @@ import interface.text_manager as tm
 import tkinter as tk
 
 
-class GameWindow(Game):
+class GameWindow:
     """The main game window"""
 
     def __init__(self):
@@ -43,26 +42,13 @@ class GameWindow(Game):
         self.text_manager = tm.TextManager(self.root, self.text_box)
         super().__init__()
 
-    def initialize(self):
-        """Display the window and start event listeners"""
-        # This automatically calls load_data()
-        self.root.mainloop()
-
-    def display_screen(self, screen: Screen):
-        super().display_screen(screen)
-        self.clear_text()
-        self.text_box.insert("end", self.screen.text)
-
     def append_to_screen(self, text: str, end: str = "\n"):
-        super().append_to_screen(text, end)
         self.text_manager.add(tm.TextToAdd(text, end))
 
     def typewriter(self, text: str, char_delay: int, end: str):
-        super().append_to_screen(text, end)
         self.text_manager.add(tm.TextToTW(text, char_delay, end))
 
     def clear_text(self):
-        """Clears the text box"""
         self.text_box.delete("1.0", "end")
 
     """GUI-specific functions"""
@@ -71,7 +57,6 @@ class GameWindow(Game):
         """This method is specific to the GUI and is used to call the initialize method
         on the superclass, because we want to wait until after the mainloop starts to do so"""
         self.root.unbind("<Visibility>")
-        super().initialize()
 
     def get_text(self):
         """Called when the user presses enter on the text entry box"""
@@ -79,4 +64,3 @@ class GameWindow(Game):
             return
         text = self.entry_box.get()
         self.entry_box.delete("0", "end")
-        super().parse_text(text)

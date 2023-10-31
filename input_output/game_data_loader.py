@@ -16,7 +16,6 @@ def load_region_file(region_file_name: str) -> RegionDef | None:
     region_file_path = file_utils.get_file_path(region_directory, region_file_name)
 
     # Attempt to open the region file
-    region_file = None
     try:
         region_file = open(region_file_path, "r")
     except FileNotFoundError:
@@ -63,7 +62,6 @@ def load_npc_file(npc_file_name: str) -> list[NpcDef] | None:
     npc_file_path = file_utils.get_file_path(npc_directory, npc_file_name)
 
     # Attempt to open the NPC file
-    npc_file = None
     try:
         npc_file = open(npc_file_path, "r")
     except FileNotFoundError:
