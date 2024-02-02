@@ -1,5 +1,3 @@
-from interface.screens.screen import Screen
-
 import game
 import interface.text_manager as tm
 import tkinter as tk
@@ -8,12 +6,8 @@ import tkinter as tk
 class GameWindow:
     """The main game window"""
 
-    def __init__(self, game: game.Game):
+    def __init__(self):
         """Create the main game window"""
-        # Game stuff
-        self.text_manager = tm.TextManager(self.root, self.text_box)
-        self.game = game
-        # GUI Stuff
         self.root = tk.Tk()
         self.root.title("Epic Quest: Text Quest")
         self.root.configure(bg="#000")
@@ -42,6 +36,10 @@ class GameWindow:
 
         self.root.geometry(f"{self.window_x}x{self.window_y}")
 
+        self.text_manager = tm.TextManager(self.root, self.text_box)
+
+        self.root.mainloop()
+
     def append_to_screen(self, text: str, end: str = "\n"):
         self.text_manager.add(tm.TextToAdd(text, end))
 
@@ -50,8 +48,6 @@ class GameWindow:
 
     def clear_text(self):
         self.text_box.delete("1.0", "end")
-
-    """GUI-specific functions"""
 
     def on_load(self):
         """Triggered when the window has loaded"""

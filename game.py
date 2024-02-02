@@ -1,14 +1,16 @@
+from interface.game_window import GameWindow
 from model.entity.player import Player
 from model.world.world import World
 
 
+import interface.game_window as game_window
+
+
 class Game:
     def __init__(self):
-        self.world: World | None = None
+        self.world: World = World()
         self.player: Player | None = None
-
-    def initialize(self):
-        self.world = World()
+        self.game_window: game_window.GameWindow = game_window.GameWindow()
 
 
 def parse_int_input(text_to_parse: str, number_of_choices: int = 0) -> int:
