@@ -1,6 +1,6 @@
-from interface.screen import Screen
+from interface.screens.screen import Screen
 
-
+import game
 import interface.text_manager as tm
 import tkinter as tk
 
@@ -8,8 +8,11 @@ import tkinter as tk
 class GameWindow:
     """The main game window"""
 
-    def __init__(self):
+    def __init__(self, game: game.Game):
         """Create the main game window"""
+        # Game stuff
+        self.text_manager = tm.TextManager(self.root, self.text_box)
+        self.game = game
         # GUI Stuff
         self.root = tk.Tk()
         self.root.title("Epic Quest: Text Quest")
@@ -18,7 +21,7 @@ class GameWindow:
         self.root.rowconfigure(0, weight=1)
         
         # Initialization event
-        self.root.bind("<Visibility>", lambda event: self.load_data())
+        self.root.bind("<Visibility>", lambda event: self.on_load())
 
         self.text_frame = tk.Frame(self.root)
         self.text_frame.grid(column=0, row=0, sticky="NSEW")
@@ -39,9 +42,6 @@ class GameWindow:
 
         self.root.geometry(f"{self.window_x}x{self.window_y}")
 
-        # Game stuff
-        self.text_manager = tm.TextManager(self.root, self.text_box)
-
     def append_to_screen(self, text: str, end: str = "\n"):
         self.text_manager.add(tm.TextToAdd(text, end))
 
@@ -53,10 +53,10 @@ class GameWindow:
 
     """GUI-specific functions"""
 
-    def load_data(self):
-        """This method is specific to the GUI and is used to call the initialize method
-        on the superclass, because we want to wait until after the mainloop starts to do so"""
+    def on_load(self):
+        """Triggered when the window has loaded"""
         self.root.unbind("<Visibility>")
+        self.game.initialize()
 
     def get_text(self):
         """Called when the user presses enter on the text entry box"""

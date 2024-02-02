@@ -3,11 +3,12 @@ from model.world.world import World
 
 
 class Game:
-    """A class that has methods for running the game"""
-
     def __init__(self):
-        self.world = World()
+        self.world: World | None = None
         self.player: Player | None = None
+
+    def initialize(self):
+        self.world = World()
 
 
 def parse_int_input(text_to_parse: str, number_of_choices: int = 0) -> int:
