@@ -197,7 +197,7 @@ class RoomScreen(Screen):
         self.current_npcs = current_npcs
 
         # Create the text for this room
-        text = current_room.desc + "\n"
+        text = current_room.description + "\n"
 
         # If there are NPCs, list them
         if len(self.current_npcs) > 0:

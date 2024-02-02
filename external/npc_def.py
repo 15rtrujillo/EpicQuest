@@ -5,7 +5,7 @@ class NpcDef:
         """Create a new NPC definition"""
         self.id = -1
         self.name = ""
-        self.desc = ""
+        self.description = ""
         self.maxHp = 100
         self.attackable = False
         self.blocking = False

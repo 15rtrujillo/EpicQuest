@@ -16,6 +16,7 @@ class GameWindow:
         self.root.configure(bg="#000")
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
+        
         # Initialization event
         self.root.bind("<Visibility>", lambda event: self.load_data())
 
@@ -40,7 +41,6 @@ class GameWindow:
 
         # Game stuff
         self.text_manager = tm.TextManager(self.root, self.text_box)
-        super().__init__()
 
     def append_to_screen(self, text: str, end: str = "\n"):
         self.text_manager.add(tm.TextToAdd(text, end))

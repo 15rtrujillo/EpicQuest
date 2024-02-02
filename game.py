@@ -2,9 +2,6 @@ from model.entity.player import Player
 from model.world.world import World
 
 
-import interface.game_window as game_window
-
-
 class Game:
     """A class that has methods for running the game"""
 
@@ -51,10 +48,10 @@ def validate_text_input(text_to_validate: str, allowed_responses: list[str],
                 return True
 
         else:
-            if partial_match and text_to_validate.lower() in allowed_response.lower():
+            if partial_match and text_to_validate.casefold() in allowed_response.casefold():
                 return True
 
-            elif text_to_validate.lower() == allowed_response.lower():
+            elif text_to_validate.casefold() == allowed_response.casefold():
                 return True
 
     return False

@@ -1,13 +1,13 @@
 class RoomDef:
     """Holds information about a map location"""
 
-    def __init__(self, id: int = -1, name: str = "", desc: str = "", n: int = -1, ne: int = -1, e: int = -1,
+    def __init__(self, id: int = -1, name: str = "", description: str = "", n: int = -1, ne: int = -1, e: int = -1,
                  se: int = -1, s: int = -1, sw: int = -1, w: int = -1, nw: int = -1, up: int = -1,
-                 down: int = -1, npc_ids: list[int] = None, item_ids: list[int] = None):
+                 down: int = -1, npc_ids: list[int] = list(), item_ids: list[int] = list()):
         """Create a new Room with links to attached rooms
         id: The ID of the room
         name: The name of the room
-        desc: The description of the room
+        description: The description of the room
         n: The ID of the room to the north
         ne: The ID of the room to the north-east
         e: The ID of the room to the east
@@ -22,7 +22,7 @@ class RoomDef:
         items: A list of item IDs in the room"""
         self.id = id
         self.name = name
-        self.desc = desc
+        self.description = description
         self.north = n
         self.northeast = ne
         self.east = e

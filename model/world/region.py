@@ -5,7 +5,7 @@ import model.world.room as room
 
 
 class Region:
-    def __init__(self, region_def: RegionDef, starting_room: room.Room):
+    def __init__(self, region_def: RegionDef):
         self.id: int = region_def.id
         self.region_def: RegionDef = region_def
-        self.starting_room: room.Room = starting_room
+        self.starting_room: room.Room | None = None

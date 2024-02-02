@@ -1,9 +1,8 @@
-from interface.game_window import GameWindow
+from game import Game
 
 
 def main():
-    game = GameWindow()
-    game.initialize()
+    game = Game()
 
 
 if __name__ == "__main__":

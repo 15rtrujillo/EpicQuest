@@ -2,7 +2,7 @@
     {
         "id": -1,
         "name": "",
-        "desc": "",
+        "description": "",
         "maxHp": 100,
         "attackable": false
     }

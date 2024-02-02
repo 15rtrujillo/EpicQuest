@@ -20,4 +20,4 @@ class Room:
         self.northwest: Room | None = None
         self.up: Room | None = None
         self.down: Room | None = None
-        self.npcs: list[npc.Npc] | None = None
+        self.npcs: list[npc.Npc] = list()
