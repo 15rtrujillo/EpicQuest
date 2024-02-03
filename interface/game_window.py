@@ -36,9 +36,10 @@ class GameWindow:
 
         self.root.geometry(f"{self.window_x}x{self.window_y}")
 
+        # Game stuff
         self.text_manager = tm.TextManager(self.root, self.text_box)
+        self.game_instance = game.Game()
 
-        self.root.mainloop()
 
     def append_to_screen(self, text: str, end: str = "\n"):
         self.text_manager.add(tm.TextToAdd(text, end))
@@ -52,7 +53,7 @@ class GameWindow:
     def on_load(self):
         """Triggered when the window has loaded"""
         self.root.unbind("<Visibility>")
-        self.game.initialize()
+        self.game_instance.attach_window(self)
 
     def get_text(self):
         """Called when the user presses enter on the text entry box"""
