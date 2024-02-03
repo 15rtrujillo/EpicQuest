@@ -1,9 +1,11 @@
 class Player:
-    """Holds all the data for players."""
+    """Player data"""
 
     def __init__(self, name: str):
-        """Create a new player with default values
-        name: The name of the player"""
+        """
+        Create a new player with default values
+        :param str name: The name of the player
+        """
         self.name = name
         self.gold = 100
         self.hp = 100

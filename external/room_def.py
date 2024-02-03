@@ -1,37 +1,20 @@
 class RoomDef:
-    """Holds information about a map location"""
+    """Definition of a room read from file"""
 
-    def __init__(self, id: int = -1, name: str = "", description: str = "", n: int = -1, ne: int = -1, e: int = -1,
-                 se: int = -1, s: int = -1, sw: int = -1, w: int = -1, nw: int = -1, up: int = -1,
-                 down: int = -1, npc_ids: list[int] = list(), item_ids: list[int] = list()):
-        """Create a new Room with links to attached rooms
-        id: The ID of the room
-        name: The name of the room
-        description: The description of the room
-        n: The ID of the room to the north
-        ne: The ID of the room to the north-east
-        e: The ID of the room to the east
-        se: The ID of the room to the southeast
-        s: The ID of the room to the south
-        sw: The ID of the room to the southwest
-        w: The ID of the room to the west
-        nw: The ID of the room to the northwest
-        up: The ID of the room above this one
-        down: The ID of the room below this one
-        npcs: A list of NPC IDs in the room
-        items: A list of item IDs in the room"""
-        self.id = id
-        self.name = name
-        self.description = description
-        self.north = n
-        self.northeast = ne
-        self.east = e
-        self.southeast = se
-        self.south = s
-        self.southwest = sw
-        self.west = w
-        self.northwest = nw
-        self.up = up
-        self.down = down
-        self.npc_ids = npc_ids
-        self.item_ids = item_ids
+    def __init__(self):
+        """Create a new Room with links to attached rooms"""
+        self.id = -1
+        self.name = ""
+        self.description = ""
+        self.north = -1
+        self.northeast = -1
+        self.east = -1
+        self.southeast = -1
+        self.south = -1
+        self.southwest = -1
+        self.west = -1
+        self.northwest = -1
+        self.up = -1
+        self.down = -1
+        self.npc_ids: list[int] = list()
+        self.item_ids: list[int] = list()

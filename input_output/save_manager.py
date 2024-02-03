@@ -1,32 +1,52 @@
 from input_output.logger.log_manager import LogManager
 from model.entity.player import Player
+from struct import pack, unpack
 
 
 import input_output.file_utils as file_utils
 
 
-def get_bytes(value) -> bytes:
-    """Convert a specific datatype to bytes for saving"""
+def get_bytes(value: str | int | float | bool) -> bytes:
+    """
+    Convert a specific datatype to bytes for saving
+    :param str | int | float | bool value: The value to convert
+    :rtype: bytes
+    :return: The value converted to bytes
+    """
     if isinstance(value, str):
         return value.encode()
     elif isinstance(value, int):
         return value.to_bytes(4, "big")
+    elif isinstance(value, float):
+        return pack("d", value)
     elif isinstance(value, bool):
         return value.to_bytes(2, "big")
     
 
-def get_data(value: bytes, data_type: type):
-    """Convert bytes to a specific datatype for loading"""
+def get_data(value: bytes, data_type: type) -> str | int | float | bool:
+    """
+    Convert bytes to a specific datatype for loading
+    :param bytes value: The bytes to convert
+    :param type data_type: The type to convert the bytes to
+    :rtype: str | int | float | bool
+    :return: The original data
+    """
     if data_type == str:
         return value.decode()
     elif data_type == int:
         return int.from_bytes(value, "big")
+    elif data_type == float:
+        return unpack("d", value)[0]
     elif data_type == bool:
         return bool.from_bytes(value, "big")
 
 
 def get_saves() -> list[str]:
-    """Get the names of the players saved in the saves directory"""
+    """
+    Get the names of the players saved in the saves directory
+    :rtype: list[str]
+    :return: A list of saved player names
+    """
     save_files = file_utils.get_files_in_directory(file_utils.get_saves_directory())
 
     player_names = []
@@ -38,8 +58,10 @@ def get_saves() -> list[str]:
 
 
 def save(player: Player):
-    """Save a player to a binary file at \"[player_name].eq\"
-    player: The player to save"""
+    """
+    Save a player to a binary file at \"[player_name].eq\"
+    :param Player player: The player to save
+    """
     save_file_name = file_utils.get_file_path(file_utils.get_saves_directory(), f"{player.name}.eq")
     
     with open(save_file_name, "wb") as save_file:
@@ -54,8 +76,12 @@ def save(player: Player):
 
 
 def load(name: str) -> Player | None:
-    """Load a player from a binary file
-    name: The name of the player to attempt to load"""
+    """
+    Load a player from a binary file
+    :param str name: The name of the player to attempt to load
+    :rtype: Player | None
+    :return: A Player if the load was successful or None otherwise
+    """
     save_file_name = file_utils.get_file_path(file_utils.get_saves_directory(), f"{name}.eq")
 
     loaded_data: dict[str, bytes] = dict()

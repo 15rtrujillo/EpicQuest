@@ -7,7 +7,7 @@ import input_output.file_utils as futils
 class LogManager:
     """Manages the singleton Logger"""
 
-    __logger = None
+    __logger: Logger | None = None
 
     @staticmethod
     def get_logger() -> Logger:

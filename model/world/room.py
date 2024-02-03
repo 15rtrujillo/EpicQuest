@@ -6,10 +6,17 @@ import model.world.region as region
 
 
 class Room:
+    """A room is a container for everything the player can interact with in a specific scene"""
+
     def __init__(self, room_def: RoomDef, located_in: region.Region):
+        """
+        Create a new room based on a room definition
+        :param RoomDef room_def: The room definition to base this room on
+        :param Region located_in: The region this room is located in
+        """
         self.id: int = room_def.id
-        self.room_def: RoomDef = room_def
-        self.located_in: region.Region = located_in
+        self.room_def = room_def
+        self.located_in = located_in
         self.north: Room | None = None
         self.northeast: Room | None = None
         self.east: Room | None = None

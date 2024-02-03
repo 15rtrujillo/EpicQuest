@@ -19,6 +19,7 @@ class ScriptContext:
         # self.interacting_item: Item | None = None
 
     def clear_context(self):
+        """Reset the context"""
         self.game = None
         self.interacting_player = None
         self.interacting_npc = None

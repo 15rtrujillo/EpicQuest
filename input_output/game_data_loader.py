@@ -9,8 +9,12 @@ import json
 
 
 def load_region_file(region_file_name: str) -> RegionDef | None:
-    """Load a region file and return a new region object containing all the loaded Rooms.
-    region_file_name: The name of the region file to load"""
+    """
+    Load a region definition from file
+    :param str region_file_name: The name of the region file to load
+    :rtype: RegionDef | None
+    :return: A region definition or None if the read was unsuccessful
+    """
     # Get the absolute path for the region file
     region_directory = file_utils.get_regions_directory()
     region_file_path = file_utils.get_file_path(region_directory, region_file_name)
@@ -55,8 +59,12 @@ def load_region_file(region_file_name: str) -> RegionDef | None:
 
 
 def load_npc_file(npc_file_name: str) -> list[NpcDef] | None:
-    """Load a NPC file and return a list of loaded NPCs.
-    npc_file_name: The name of the map file to load"""
+    """
+    Load NPC definitions from a file
+    :param str npc_file_name: The name of the NPC file to load
+    :rtype: list[NpcDef] | None
+    :return: A list of NPC definitions or None if the read was unsuccessful
+    """
     # Get the absolute path for the NPC file
     npc_directory = file_utils.get_npcs_directory()
     npc_file_path = file_utils.get_file_path(npc_directory, npc_file_name)

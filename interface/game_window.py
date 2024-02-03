@@ -40,7 +40,6 @@ class GameWindow:
         self.text_manager = tm.TextManager(self.root, self.text_box)
         self.game_instance = game.Game()
 
-
     def append_to_screen(self, text: str, end: str = "\n"):
         self.text_manager.add(tm.TextToAdd(text, end))
 

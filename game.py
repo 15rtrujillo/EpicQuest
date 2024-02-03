@@ -16,9 +16,14 @@ class Game:
 
 
 def parse_int_input(text_to_parse: str, number_of_choices: int = 0) -> int:
-    """Parses int input. Returns -1 if the input is invalid in some way
-    text_to_parse: The text to parse
-    number_of_choices: If this is not 0, the parsed int will be range checked form one to this value (inclusive)"""
+    """
+    Parses int input
+    :param str text_to_parse: The text to parse
+    :param int number_of_choices: If this is not 0, the parsed int will be range checked form one to this value
+    (inclusive)
+    :rtype: int
+    :return: The user's input as an int. -1 will be returned if the input is invalid in some way
+    """
     try:
         int_input = int(text_to_parse)
         if number_of_choices == -1:
@@ -33,12 +38,16 @@ def parse_int_input(text_to_parse: str, number_of_choices: int = 0) -> int:
 
 def validate_text_input(text_to_validate: str, allowed_responses: list[str],
                         case_sensitive: bool = False, partial_match: bool = False) -> bool:
-    """Validates text input
-    text_to_validate: The text to validate
-    allowed_responses: If this is not None, the user's input will be checked against a list of
+    """
+    Validates text input
+    :param str text_to_validate: The text to validate
+    :param list[str] allowed_responses: If this is not None, the user's input will be checked against a list of
     allowed responses. If the user enters an invalid response, they will be prompted to try again
-    case_sensitive: All string comparisons will be case-sensitive if this is set
-    partial_match: Checks if the text is a substring of one of the allowed responses"""
+    :param bool case_sensitive: All string comparisons will be case-sensitive if this is set
+    :param bool partial_match: Checks if the text is a substring of one of the allowed responses
+    :rtype: bool
+    :return: True if the input is valid according to the conditions specified, False otherwise
+    """
     # If we don't care about validating the response
     # But then what is the point of calling this function?
     if allowed_responses is None:

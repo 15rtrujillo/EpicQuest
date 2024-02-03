@@ -1,5 +1,5 @@
 class NpcDef:
-    """Holds information about NPCs"""
+    """Definition of an NPC read from file"""
 
     def __init__(self):
         """Create a new NPC definition"""

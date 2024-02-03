@@ -3,8 +3,10 @@ from plugins.plugin_manager import PluginManager
 
 
 def mes(*text: str):
-    """Adds text to the current screen
-    text: The message to be added"""
+    """
+    Adds text to the current screen
+    :param str text: The message to be added
+    """
     for line in text:
         PluginManager.get_script_context().game.append_to_screen(line)
 
@@ -16,9 +18,9 @@ def pause():
 
 def npc_say(*text: str, delay_ms: int = 25, end: str = "\n"):
     """Adds NPC dialog to the screen
-    text: The dialog for the NPC
-    delay_ms: For GUI interface, the time between each character getting added to the screen
-    end: The character to append to the end of the NPC's dialog"""
+    :param str text: The dialog for the NPC
+    :param int delay_ms: For GUI interface, the time between each character getting added to the screen
+    :param str end: The character to append to the end of the NPC's dialog"""
     for line in text:
         PluginManager.get_script_context().game.typewriter(line, delay_ms, end)
 
@@ -30,9 +32,11 @@ def clear():
 
 
 def set_room(room_id: int):
-    """Changes the interacting room to the one provided
+    """
+    Changes the interacting room to the one provided
     This does not relocate the player
-    id: The ID of the room to set as interacting"""
+    :param int id: The ID of the room to set as interacting
+    """
     script_context = PluginManager.get_script_context()
     game = script_context.game
     if room_id in game.current_map.rooms.keys():
@@ -52,5 +56,9 @@ def travel():
 
 
 def get_npc() -> npc_def.NpcDef | None:
-    """Get the NPC object the plugin is interacting with"""
+    """
+    Get the NPC object the plugin is interacting with
+    :rtype: NPCDef | None
+    :return: The definition of the NPC the plugin is interacting with
+    """
     return PluginManager.get_script_context().interacting_npc

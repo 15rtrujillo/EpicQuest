@@ -11,7 +11,8 @@ import input_output.game_data_loader as game_data_loader
 
 
 class World:
-    """The game world. Contains instances and definitions."""
+    """The game world. Contains instances and definitions"""
+
     def __init__(self):
         """Initialize the game world."""
         self.regions: dict[int, Region] = dict()
@@ -23,7 +24,7 @@ class World:
         self.populate_world()
 
     def load_region_defs(self):
-        """Load region definitions from file."""
+        """Load region definitions from file"""
         regions_directory = file_utils.get_regions_directory()
         region_files = file_utils.get_files_in_directory(regions_directory)
         for file_name in region_files:
@@ -34,7 +35,7 @@ class World:
             self.region_defs[new_region_def.id] = new_region_def
 
     def load_npc_defs(self):
-        """Load NPC definitions from file."""
+        """Load NPC definitions from file"""
         npcs_directory = file_utils.get_npcs_directory()
         npc_files = file_utils.get_files_in_directory(npcs_directory)
         for file_name in npc_files:
@@ -48,7 +49,7 @@ class World:
                 self.npc_defs[new_npc_def.id] = new_npc_def
 
     def populate_world(self):
-        """Instantiate the world based on the definitions."""
+        """Instantiate the world based on the definitions"""
         regions_created = 0
         rooms_created = 0
         npcs_created = 0
