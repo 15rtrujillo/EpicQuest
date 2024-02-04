@@ -5,7 +5,7 @@ from typing import Callable
 class NumberedMenuScreen(Screen):
     """A numbered menu where the user can select a specific option"""
 
-    def __init__(self, text: str = "", options: dict[str, Screen | Callable[[str], None]] | None = None):
+    def __init__(self, text: str, options: dict[str, Screen | Callable[[str], None]] | None = None):
         """
         Create a menu that displays a list of numbered options to the user
         :param str text: The text for the menu, not including the options

@@ -53,6 +53,7 @@ class GameWindow:
         """Triggered when the window has loaded"""
         self.root.unbind("<Visibility>")
         self.game_instance.attach_window(self)
+        self.root.after(game.Game.TICK_RATE, self.game_instance.tick)
 
     def get_text(self):
         """Called when the user presses enter on the text entry box"""

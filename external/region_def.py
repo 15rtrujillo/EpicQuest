@@ -21,7 +21,7 @@ class RegionDef:
         :param RoomDef room: The room to add
         """
         if room.id in self.room_defs.keys():
-            LogManager.get_logger().warn(f"Attempted to add Room with ID {room.id} to map with ID "
+            LogManager.get_logger().warn(f"Attempted to add Room with ID {room.id} to region with ID "
                                          f"{self.id} but a Room with the same ID already exists. "
                                          f"New Room was not added.")
             return

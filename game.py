@@ -1,3 +1,5 @@
+from interface.screens.numbered_menu_screen import NumberedMenuScreen
+from interface.screens.screen import Screen
 from model.entity.player import Player
 from model.world.world import World
 
@@ -6,13 +8,35 @@ import interface.game_window as game_window
 
 
 class Game:
+    """The game engine"""
+    TICK_RATE: int = 600
+
     def __init__(self):
+        """Create an instance of the game engine"""
         self.world: World = World()
         self.player: Player | None = None
         self.window: game_window.GameWindow | None = None
+        self.current_screen: Screen | None = None
+        self.next_screen: Screen | None = None
+        self.current_tick = 0
+
+    def tick(self):
+        self.current_tick += 1
+        print("Tick:", self.current_tick)
+
+        self.window.root.after(Game.TICK_RATE, self.tick)
         
     def attach_window(self, window: game_window.GameWindow):
         self.window = window
+
+    def main_menu(self) -> NumberedMenuScreen:
+        """
+        Create the main menu
+        :rtype: NumberedMenuScreen
+        :return: The main menu screen
+        """
+        menu = NumberedMenuScreen("Epic Quest: Text Quest\n\nMain Menu")
+        return menu
 
 
 def parse_int_input(text_to_parse: str, number_of_choices: int = 0) -> int:

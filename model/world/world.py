@@ -1,5 +1,6 @@
 from external.npc_def import NpcDef
 from external.region_def import RegionDef
+from external.room_def import RoomDef
 from input_output.logger.log_manager import LogManager
 from model.entity.npc import Npc
 from model.world.region import Region
@@ -21,7 +22,6 @@ class World:
 
         self.load_region_defs()
         self.load_npc_defs()
-        self.populate_world()
 
     def load_region_defs(self):
         """Load region definitions from file"""
@@ -32,6 +32,14 @@ class World:
             # We check for -1 to disregard test regions
             if new_region_def is None or new_region_def.id == -1:
                 continue
+
+            # Make sure a region with this ID doesn't already exist
+            if new_region_def.id in self.region_defs.keys():
+                LogManager.get_logger().warn(f"The region {new_region_def.name} has the same ID as "
+                                             f"{self.region_defs[new_region_def.id].name} (ID: "
+                                             f"{new_region_def.id})\n{new_region_def.name} was not loaded.")
+                continue
+
             self.region_defs[new_region_def.id] = new_region_def
 
     def load_npc_defs(self):
@@ -46,43 +54,75 @@ class World:
                 # Discard test npcs
                 if new_npc_def.id == -1:
                     continue
+
+                if new_npc_def.id in self.npc_defs.keys():
+                    LogManager.get_logger().warn(f"The NPC {new_npc_def.name} has the same ID as "
+                                                 f"{self.npc_defs[new_npc_def.id].name} (ID: "
+                                                 f"{new_npc_def.id})\n{new_npc_def.name} was not loaded.")
+                    continue
+
                 self.npc_defs[new_npc_def.id] = new_npc_def
+
+    def instantiate_region(self, region_id) -> Region:
+        """
+        Instantiate a region based on a region definition
+        :param int region_id: The ID of the region to instantiate
+        :rtype: Region
+        :return: The new region instance
+        """
+        # Create a region
+        region_def = self.region_defs[region_id]
+        region = Region(region_def)
+        rooms: dict[int, Room] = dict()
+
+        # Create rooms in the region
+        for room_id in region_def.room_defs.keys():
+            room = self.instantiate_room(room_id, region)
+            # Add the room to a dictionary for now
+            rooms[room_id] = room
+
+        # Go through the room dictionary and add all the connections
+        directions = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest", "up",
+                      "down"]
+        for room in rooms.values():
+            room_dict = room.__dict__
+            room_def_dict = room.room_def.__dict__
+            for direction in directions:
+                direction_id = room_def_dict[direction]
+                if direction_id != -1:
+                    room_dict[direction] = rooms[direction_id]
+
+        region.starting_room = rooms[0]
+        return region
+
+    def instantiate_room(self, room_id: int, located_in: Region) -> Room:
+        """
+        Instantiate a room based on a room definition
+        :param int room_id: The ID of the room to instantiate
+        :param Region located_in: The region this room is located in
+        :rtype: Room
+        :return: The new room instance
+        """
+        room_def = self.region_defs[located_in.id].room_defs[room_id]
+        room = Room(room_def, located_in)
+        # Create NPCs in the room
+        for npc_id in room_def.npc_ids:
+            npc = Npc(self.npc_defs[npc_id], room)
+            room.npcs.append(npc)
+        return room
+
+    def instantiate_npc(self, npc_id: int, location: Room) -> Npc:
+        """
+        Instantiate an NPC based on an NPC definition
+        :param int npc_id: The ID of the NPC to instantiate
+        :param Room location: The room the NPC is located in
+        :rtype: NPC
+        :return: The new NPC instance
+        """
+        raise NotImplementedError()
 
     def populate_world(self):
         """Instantiate the world based on the definitions"""
-        regions_created = 0
-        rooms_created = 0
-        npcs_created = 0
-        for region_def in self.region_defs.values():
-            # Create a region
-            region = Region(region_def)
-            rooms: dict[int, Room] = dict()
-
-            # Create rooms in the region
-            for room_def in region_def.room_defs.values():
-                room = Room(room_def, region)
-
-                # Create NPCs in the room
-                for npc_id in room_def.npc_ids:
-                    npc = Npc(self.npc_defs[npc_id], room)
-                    npcs_created += 1
-                    room.npcs.append(npc)
-
-                # Add the room to a dictionary for now
-                rooms_created += 1
-                rooms[room.id] = room
-
-            # Go through the room dictionary and add all the connections                
-            directions = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest", "up", "down"]
-            for room in rooms.values():
-                room_dict = room.__dict__
-                room_def_dict = room.room_def.__dict__
-                for direction in directions:
-                    direction_id = room_def_dict[direction]
-                    if direction_id != -1:
-                        room_dict[direction] = rooms[direction_id]
-
-            region.starting_room = rooms[0]
-            regions_created += 1
-            self.regions[region.id] = region
-        LogManager.get_logger().info(f"Initialized {npcs_created} NPCs in {rooms_created} rooms in {regions_created} regions")
+        for region_id in self.region_defs.keys():
+            region = self.instantiate_region(region_id)
+            self.regions[region_id] = region
