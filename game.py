@@ -24,7 +24,7 @@ class Game:
         self.current_tick += 1
         print("Tick:", self.current_tick)
 
-        self.window.root.after(Game.TICK_RATE, self.tick)
+        self.window.after(Game.TICK_RATE, self.tick)
         
     def attach_window(self, window: game_window.GameWindow):
         self.window = window

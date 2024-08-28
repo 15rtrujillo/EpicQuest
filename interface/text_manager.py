@@ -37,13 +37,13 @@ class TextToTW(TextToAdd):
 class TextManager:
     """An object to manage the text that gets added to the textbox"""
 
-    def __init__(self, root: tk.Tk, textbox: tk.Text):
+    def __init__(self, game_window: tk.Tk, textbox: tk.Text):
         """
         Create a new Text Manager
         :param tk.Tk root: The tkinter root associated with this text manager
         :param tk.Text textbox: A textbox to add text to
         """
-        self.root = root
+        self.game_window = game_window
         self.textbox = textbox
         self.queue: deque[TextToAdd] = deque()
         self.running = False
@@ -57,9 +57,9 @@ class TextManager:
         delay = self.__get_total_delay()
         self.queue.append(text)       
         if isinstance(text, TextToTW):
-            self.root.after(delay, self.__typewrite_text, text)
+            self.game_window.after(delay, self.__typewrite_text, text)
         elif isinstance(text, TextToAdd):
-            self.root.after(delay, self.__add_text, text)
+            self.game_window.after(delay, self.__add_text, text)
 
     def __add_text(self, text: TextToAdd):
         """
@@ -80,7 +80,7 @@ class TextManager:
         self.textbox.insert("end", text.text[index])
         index += 1
         if index < len(text.text):
-            self.root.after(text.delay, self.__typewrite_text, text, index)
+            self.game_window.after(text.delay, self.__typewrite_text, text, index)
         else:
             # If there's nothing else to typewrite, add the ending character
             self.textbox.insert("end", text.end)

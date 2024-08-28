@@ -3,28 +3,28 @@ import interface.text_manager as tm
 import tkinter as tk
 
 
-class GameWindow:
+class GameWindow(tk.Tk):
     """The main game window"""
 
     def __init__(self):
         """Create the main game window"""
-        self.root = tk.Tk()
-        self.root.title("Epic Quest: Text Quest")
-        self.root.configure(bg="#000")
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
+        super().__init__()
+        self.title("Epic Quest: Text Quest")
+        self.configure(bg="#000")
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
         
         # Initialization event
-        self.root.bind("<Visibility>", lambda event: self.on_load())
+        self.bind("<Visibility>", lambda event: self.on_load())
 
-        self.text_frame = tk.Frame(self.root)
+        self.text_frame = tk.Frame(self)
         self.text_frame.grid(column=0, row=0, sticky="NSEW")
 
         self.text_box = tk.Text(self.text_frame, bg="#000", fg="#FFF", font="Consolas 20", wrap="word")
         self.text_box.bind("<Key>", lambda event: "break")
         self.text_box.pack(fill="both", expand=True)
 
-        self.entry_frame = tk.Frame(self.root)
+        self.entry_frame = tk.Frame(self)
         self.entry_frame.grid(column=0, row=1, sticky="NSEW")
 
         self.entry_box = tk.Entry(self.entry_frame, bg="#000", fg="#FFF", font="Consolas 20")
@@ -34,10 +34,10 @@ class GameWindow:
         self.window_x = 960
         self.window_y = 540
 
-        self.root.geometry(f"{self.window_x}x{self.window_y}")
+        self.geometry(f"{self.window_x}x{self.window_y}")
 
         # Game stuff
-        self.text_manager = tm.TextManager(self.root, self.text_box)
+        self.text_manager = tm.TextManager(self, self.text_box)
         self.game_instance = game.Game()
 
     def append_to_screen(self, text: str, end: str = "\n"):
@@ -51,9 +51,9 @@ class GameWindow:
 
     def on_load(self):
         """Triggered when the window has loaded"""
-        self.root.unbind("<Visibility>")
+        self.unbind("<Visibility>")
         self.game_instance.attach_window(self)
-        self.root.after(game.Game.TICK_RATE, self.game_instance.tick)
+        self.after(game.Game.TICK_RATE, self.game_instance.tick)
 
     def get_text(self):
         """Called when the user presses enter on the text entry box"""
