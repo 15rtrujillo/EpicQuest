@@ -20,10 +20,10 @@ class World:
         self.region_defs: dict[int, RegionDef] = dict()
         self.npc_defs: dict[int, NpcDef] = dict()
 
-        self.load_region_defs()
-        self.load_npc_defs()
+        self._load_region_defs()
+        self._load_npc_defs()
 
-    def load_region_defs(self):
+    def _load_region_defs(self):
         """Load region definitions from file"""
         regions_directory = file_utils.get_regions_directory()
         region_files = file_utils.get_files_in_directory(regions_directory)
@@ -42,7 +42,7 @@ class World:
 
             self.region_defs[new_region_def.id] = new_region_def
 
-    def load_npc_defs(self):
+    def _load_npc_defs(self):
         """Load NPC definitions from file"""
         npcs_directory = file_utils.get_npcs_directory()
         npc_files = file_utils.get_files_in_directory(npcs_directory)

@@ -1,3 +1,6 @@
+from typing import Callable
+
+
 import game
 import interface.text_manager as tm
 import tkinter as tk
@@ -6,7 +9,7 @@ import tkinter as tk
 class GameWindow(tk.Tk):
     """The main game window"""
 
-    def __init__(self):
+    def __init__(self, tick_function: Callable[[], None]):
         """Create the main game window"""
         super().__init__()
         self.title("Epic Quest: Text Quest")
@@ -28,7 +31,7 @@ class GameWindow(tk.Tk):
         self.entry_frame.grid(column=0, row=1, sticky="NSEW")
 
         self.entry_box = tk.Entry(self.entry_frame, bg="#000", fg="#FFF", font="Consolas 20")
-        self.entry_box.bind("<Return>", lambda event: self.get_text())
+        self.entry_box.bind("<Return>", lambda _: self.get_text())
         self.entry_box.pack(fill="both", expand=True)
 
         self.window_x = 960
@@ -38,7 +41,7 @@ class GameWindow(tk.Tk):
 
         # Game stuff
         self.text_manager = tm.TextManager(self, self.text_box)
-        self.game_instance = game.Game()
+        self.tick_function = tick_function
 
     def append_to_screen(self, text: str, end: str = "\n"):
         self.text_manager.add(tm.TextToAdd(text, end))
@@ -52,12 +55,12 @@ class GameWindow(tk.Tk):
     def on_load(self):
         """Triggered when the window has loaded"""
         self.unbind("<Visibility>")
-        self.game_instance.attach_window(self)
-        self.after(game.Game.TICK_RATE, self.game_instance.tick)
+        self.after(game.Game.TICK_RATE, self.tick_function)
 
     def get_text(self):
         """Called when the user presses enter on the text entry box"""
         if self.text_manager.running:
             return
-        text = self.entry_box.get()
         self.entry_box.delete("0", "end")
+        
+        return self.entry_box.get()

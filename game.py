@@ -1,33 +1,37 @@
+from interface.game_window import GameWindow
 from interface.screens.numbered_menu_screen import NumberedMenuScreen
 from interface.screens.screen import Screen
 from model.entity.player import Player
 from model.world.world import World
 
 
-import interface.game_window as game_window
-
-
 class Game:
     """The game engine"""
-    TICK_RATE: int = 600
+    TICK_RATE: int = 100
 
     def __init__(self):
         """Create an instance of the game engine"""
         self.world: World = World()
         self.player: Player | None = None
-        self.window: game_window.GameWindow | None = None
+        self.window: GameWindow | None = None
         self.current_screen: Screen | None = None
         self.next_screen: Screen | None = None
         self.current_tick = 0
 
+    def play(self):
+        self.next_screen = self.main_menu()
+        self.game_window = GameWindow(self.tick)
+        self.game_window.mainloop()
+
     def tick(self):
         self.current_tick += 1
-        print("Tick:", self.current_tick)
 
-        self.window.after(Game.TICK_RATE, self.tick)
-        
-    def attach_window(self, window: game_window.GameWindow):
-        self.window = window
+        if self.next_screen is not None:
+            self.current_screen = self.next_screen
+            self.next_screen = None
+            self.game_window.append_to_screen(self.current_screen.text)
+
+        self.game_window.after(Game.TICK_RATE, self.tick)
 
     def main_menu(self) -> NumberedMenuScreen:
         """

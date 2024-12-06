@@ -1,10 +1,10 @@
 from game import Game
-from interface.game_window import GameWindow
+from game import Game
 
 
 def main():
-    game_window = GameWindow()
-    game_window.root.mainloop()
+    game = Game()
+    game.play()
 
 
 if __name__ == "__main__":
